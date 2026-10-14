@@ -45,7 +45,7 @@ export default function App() {
       <ExpoStatusBar hidden />
       <ImageBackground
         source={backgroundImage}
-        resizeMode="cover"
+        resizeMode="contain"
         style={styles.background}
         imageStyle={styles.backgroundImage}
         accessibilityLabel="RISK THE WIN welcome background"
