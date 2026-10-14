@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   controls: {
+    flex: 1,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-end',
