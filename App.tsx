@@ -51,6 +51,7 @@ export default function App() {
         accessibilityLabel="RISK THE WIN welcome background"
       >
         <View style={[styles.controls, { paddingBottom: Math.max(24, height * 0.045) }]}>
+          <View style={[styles.menu, { width: Math.min(width, height * (2 / 3)) }]}>
           <View style={styles.mainButtons}>
             <Pressable
               accessibilityRole="button"
@@ -94,6 +95,7 @@ export default function App() {
           >
             <Image source={settingsImage} style={styles.settingsArtwork} resizeMode="contain" />
           </Pressable>
+          </View>
         </View>
       </ImageBackground>
     </View>
@@ -123,6 +125,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     position: 'relative',
     gap: 8,
+  },
+  menu: {
+    height: '100%',
+    maxWidth: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    position: 'relative',
   },
   mainButtons: {
     alignItems: 'center',
