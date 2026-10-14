@@ -38,7 +38,7 @@ export default function App() {
   const menuWidth = Math.min(width, height * (2 / 3));
   const buttonWidth = Math.min(menuWidth * 0.84, 440);
   const buttonHeight = Math.max(54, Math.min(buttonWidth * 0.235, 94));
-  const settingsSize = Math.max(56, Math.min(width * 0.17, 84));
+  const settingsSize = Math.max(20, Math.min(width * 0.17, 84)) / 3;
 
   return (
     <View style={styles.root}>
@@ -88,8 +88,8 @@ export default function App() {
               {
                 width: settingsSize,
                 height: settingsSize,
-                right: compact ? 18 : 28,
-                bottom: Math.max(20, height * 0.025),
+                right: compact ? 12 : 20,
+                top: compact ? 12 : 20,
                 opacity: pressed ? 0.82 : 1,
               },
             ]}
