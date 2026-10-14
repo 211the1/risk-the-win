@@ -50,12 +50,6 @@ export default function App() {
         imageStyle={styles.backgroundImage}
         accessibilityLabel="RISK THE WIN welcome background"
       >
-        <Image
-          source={backgroundImage}
-          resizeMode="contain"
-          style={styles.fullScene}
-          accessible={false}
-        />
         <View style={[styles.controls, { paddingBottom: Math.max(24, height * 0.045) }]}>
           <View style={styles.mainButtons}>
             <Pressable
@@ -119,12 +113,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   backgroundImage: {
-    width: '100%',
-    height: '100%',
-    opacity: 0.82,
-  },
-  fullScene: {
-    position: 'absolute',
     width: '100%',
     height: '100%',
   },
