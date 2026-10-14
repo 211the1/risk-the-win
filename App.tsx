@@ -35,7 +35,8 @@ function showComingSoon(action: WelcomeAction) {
 export default function App() {
   const { width, height } = useWindowDimensions();
   const compact = width < 500;
-  const buttonWidth = Math.min(width * 0.84, 440);
+  const menuWidth = Math.min(width, height * (2 / 3));
+  const buttonWidth = Math.min(menuWidth * 0.84, 440);
   const buttonHeight = Math.max(54, Math.min(buttonWidth * 0.235, 94));
   const settingsSize = Math.max(56, Math.min(width * 0.17, 84));
 
@@ -51,7 +52,7 @@ export default function App() {
         accessibilityLabel="RISK THE WIN welcome background"
       >
         <View style={[styles.controls, { paddingBottom: Math.max(24, height * 0.045) }]}>
-          <View style={[styles.menu, { width: Math.min(width, height * (2 / 3)) }]}>
+          <View style={[styles.menu, { width: menuWidth }]}>
           <View style={styles.mainButtons}>
             <Pressable
               accessibilityRole="button"
