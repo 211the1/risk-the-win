@@ -19,6 +19,7 @@ const createGameImage = require('./assets/buttons/create-game.png');
 const joinGameImage = require('./assets/buttons/join-game.png');
 const settingsImage = require('./assets/buttons/settings-button.png');
 const settingsMenuImage = require('./assets/buttons/settings-menu.png');
+const howToPlayMenuImage = require('./assets/buttons/how-to-play-menu.png');
 
 type WelcomeAction = 'Create Game' | 'Join Game';
 
@@ -118,7 +119,7 @@ export default function App() {
           </View>
         </View>
 
-        {settingsOpen && (
+        {settingsOpen && !howToPlayOpen && (
           <View style={styles.settingsOverlay}>
             <Pressable
               accessibilityRole="button"
@@ -185,33 +186,27 @@ export default function App() {
               onPress={() => setHowToPlayOpen(false)}
               style={styles.howToPlayBackdrop}
             />
-            <View style={[styles.howToPlayPanel, { width: Math.min(width * 0.88, 520), maxHeight: height * 0.82 }]}>
-              <View style={styles.howToPlayHeader}>
-                <Text style={styles.howToPlayTitle}>HOW TO PLAY</Text>
-                <Text style={styles.howToPlaySubtitle}>RISK THE WIN • QUICK RULES</Text>
-              </View>
-              <ScrollView style={styles.howToPlayScroll} contentContainerStyle={styles.howToPlayContent}>
-                <Text style={styles.ruleHeading}>YOUR TURN</Text>
-                <Text style={styles.ruleText}>Match the active color or the character on the top discard card. If you don't have a playable card, draw. You may keep drawing and then play any legal card you drew that turn.</Text>
-                <Text style={styles.ruleHeading}>SPECIAL CARDS</Text>
-                <Text style={styles.ruleText}>• SKIP — the next player loses their turn.</Text>
-                <Text style={styles.ruleText}>• REVERSE — changes the direction of play.</Text>
-                <Text style={styles.ruleText}>• WILD — choose any of the four colors. It cannot answer a Challenge.</Text>
-                <Text style={styles.ruleText}>• CHALLENGE — the next player may play a matching character card instead of drawing two cards.</Text>
-                <Text style={styles.ruleText}>• TRIPLE DRAW — the next player draws three cards unless they stack a Triple Draw. The first must match the active color; later stacked cards can be any color.</Text>
-                <Text style={styles.ruleHeading}>FINAL SHOWDOWN</Text>
-                <Text style={styles.ruleText}>If a Challenge response is your last card, Final Showdown starts immediately. The selected opponent answers a multiple-choice question within 20 seconds.</Text>
-                <Text style={styles.ruleHeading}>HOW TO WIN</Text>
-                <Text style={styles.ruleText}>Get rid of all your cards to win, unless Final Showdown rules decide the result. If only one active player remains, that player wins.</Text>
-              </ScrollView>
+            <View
+              style={[
+                styles.howToPlayArtworkPanel,
+                {
+                  width: Math.min(width * 0.94, height * 0.82 * (2 / 3), 600),
+                  height: Math.min(width * 0.94, height * 0.82 * (2 / 3), 600) * 1.5,
+                },
+              ]}
+            >
+              <Image
+                source={howToPlayMenuImage}
+                style={styles.howToPlayArtwork}
+                resizeMode="contain"
+                accessibilityLabel="RISK THE WIN How to Play rules menu"
+              />
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Back to Settings"
                 onPress={() => setHowToPlayOpen(false)}
-                style={({ pressed }) => [styles.howToPlayBackButton, { opacity: pressed ? 0.82 : 1 }]}
-              >
-                <Text style={styles.howToPlayBackText}>BACK</Text>
-              </Pressable>
+                style={[styles.howToPlayBackHotspot, { left: '22%', top: '89%', width: '56%', height: '9%' }]}
+              />
             </View>
           </View>
         )}
@@ -330,84 +325,17 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(5, 8, 25, 0.78)',
   },
-  howToPlayPanel: {
-    backgroundColor: '#082C70',
-    borderColor: '#F7C94A',
-    borderWidth: 4,
-    borderRadius: 28,
-    padding: 12,
-    overflow: 'hidden',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.55,
-    shadowRadius: 14,
-    elevation: 18,
-  },
-  howToPlayHeader: {
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 8,
-    borderWidth: 2,
-    borderColor: '#DFAE32',
-    borderRadius: 18,
-    backgroundColor: '#123F91',
-    marginBottom: 10,
-  },
-  howToPlayTitle: {
-    color: '#FFE66D',
-    fontSize: 27,
-    fontWeight: '900',
-    textAlign: 'center',
-    textShadowColor: '#4D1B08',
-    textShadowOffset: { width: 1, height: 3 },
-    textShadowRadius: 2,
-  },
-  howToPlaySubtitle: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '800',
-    letterSpacing: 1.2,
-    marginTop: 3,
-  },
-  howToPlayScroll: {
-    flexShrink: 1,
-  },
-  howToPlayContent: {
-    paddingHorizontal: 8,
-    paddingBottom: 8,
-  },
-  ruleHeading: {
-    color: '#FFE66D',
-    fontSize: 15,
-    fontWeight: '900',
-    marginTop: 9,
-    marginBottom: 4,
-    letterSpacing: 0.6,
-  },
-  ruleText: {
-    color: '#FFFFFF',
-    fontSize: 13,
-    lineHeight: 19,
-    marginBottom: 5,
-    fontWeight: '500',
-  },
-  howToPlayBackButton: {
+  howToPlayArtworkPanel: {
+    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
-    paddingVertical: 11,
-    borderRadius: 18,
-    borderWidth: 3,
-    borderColor: '#F7D35C',
-    backgroundColor: '#5D28A6',
   },
-  howToPlayBackText: {
-    color: '#FFF1A3',
-    fontSize: 21,
-    fontWeight: '900',
-    letterSpacing: 1.5,
-    textShadowColor: '#31115C',
-    textShadowOffset: { width: 1, height: 2 },
-    textShadowRadius: 2,
+  howToPlayArtwork: {
+    width: '100%',
+    height: '100%',
+  },
+  howToPlayBackHotspot: {
+    position: 'absolute',
+    backgroundColor: 'transparent',
   },
 });
