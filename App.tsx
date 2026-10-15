@@ -55,7 +55,7 @@ export default function App() {
   const buttonHeight = Math.max(54, Math.min(buttonWidth * 0.235, 94));
   const settingsSize = Math.max(20, Math.min(width * 0.17, 84)) / 3;
   // Keep the settings artwork at roughly half its previous size.
-  const settingsPanelWidth = Math.min(width * 0.47, height * 0.41, 310);
+  const settingsPanelWidth = Math.min(width * 0.705, height * 0.615, 465);
 
   return (
     <View style={styles.root}>
