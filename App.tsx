@@ -144,7 +144,7 @@ export default function App() {
                 accessibilityRole="button"
                 accessibilityLabel={soundEffectsOn ? 'Turn sound effects off' : 'Turn sound effects on'}
                 onPress={() => setSoundEffectsOn((value) => !value)}
-                style={[styles.hotspot, { left: '68%', top: '42%', width: '22%', height: '9%' }]}
+                style={[styles.hotspot, { left: '64%', top: '42%', width: '22%', height: '9%' }]}
               >
                 <View style={[styles.statusPill, soundEffectsOn ? styles.statusOn : styles.statusOff]}>
                   <Text style={styles.statusText}>{soundEffectsOn ? 'ON' : 'OFF'}</Text>
@@ -154,7 +154,7 @@ export default function App() {
                 accessibilityRole="button"
                 accessibilityLabel={backgroundMusicOn ? 'Turn background music off' : 'Turn background music on'}
                 onPress={() => setBackgroundMusicOn((value) => !value)}
-                style={[styles.hotspot, { left: '68%', top: '54%', width: '22%', height: '9%' }]}
+                style={[styles.hotspot, { left: '64%', top: '54%', width: '22%', height: '9%' }]}
               >
                 <View style={[styles.statusPill, backgroundMusicOn ? styles.statusOn : styles.statusOff]}>
                   <Text style={styles.statusText}>{backgroundMusicOn ? 'ON' : 'OFF'}</Text>
