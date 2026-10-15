@@ -54,7 +54,8 @@ export default function App() {
   const buttonWidth = Math.min(menuWidth * 0.84, 440);
   const buttonHeight = Math.max(54, Math.min(buttonWidth * 0.235, 94));
   const settingsSize = Math.max(20, Math.min(width * 0.17, 84)) / 3;
-  const settingsPanelWidth = Math.min(width * 0.94, height * 0.82, 620);
+  // Keep the settings artwork at roughly half its previous size.
+  const settingsPanelWidth = Math.min(width * 0.47, height * 0.41, 310);
 
   return (
     <View style={styles.root}>
@@ -128,22 +129,22 @@ export default function App() {
                 styles.settingsPanel,
                 {
                   width: settingsPanelWidth,
-                  maxHeight: height * 0.94,
-                  aspectRatio: 1279 / 1311,
+                  height: settingsPanelWidth * (1311 / 1279),
                 },
               ]}
             >
               <Image
                 source={settingsMenuImage}
                 style={styles.settingsMenuArtwork}
-                resizeMode="contain"
+                resizeMode="stretch"
                 accessibilityLabel="Settings menu with sound effects, background music, how to play, and back"
               />
+              {/* Narrow tap targets so the decorative left/right gems aren't clickable. */}
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={soundEffectsOn ? 'Turn sound effects off' : 'Turn sound effects on'}
                 onPress={() => setSoundEffectsOn((value) => !value)}
-                style={[styles.hotspot, { left: '70%', top: '35%', width: '24%', height: '12%' }]}
+                style={[styles.hotspot, { left: '68%', top: '42%', width: '22%', height: '9%' }]}
               >
                 <View style={[styles.statusPill, soundEffectsOn ? styles.statusOn : styles.statusOff]}>
                   <Text style={styles.statusText}>{soundEffectsOn ? 'ON' : 'OFF'}</Text>
@@ -153,7 +154,7 @@ export default function App() {
                 accessibilityRole="button"
                 accessibilityLabel={backgroundMusicOn ? 'Turn background music off' : 'Turn background music on'}
                 onPress={() => setBackgroundMusicOn((value) => !value)}
-                style={[styles.hotspot, { left: '70%', top: '49%', width: '24%', height: '12%' }]}
+                style={[styles.hotspot, { left: '68%', top: '54%', width: '22%', height: '9%' }]}
               >
                 <View style={[styles.statusPill, backgroundMusicOn ? styles.statusOn : styles.statusOff]}>
                   <Text style={styles.statusText}>{backgroundMusicOn ? 'ON' : 'OFF'}</Text>
@@ -163,13 +164,13 @@ export default function App() {
                 accessibilityRole="button"
                 accessibilityLabel="How to Play"
                 onPress={() => showMessage('How to Play', howToPlayText)}
-                style={[styles.hotspot, { left: '24%', top: '62%', width: '70%', height: '13%' }]}
+                style={[styles.hotspot, { left: '17%', top: '65%', width: '66%', height: '10%' }]}
               />
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Back to welcome screen"
                 onPress={() => setSettingsOpen(false)}
-                style={[styles.hotspot, { left: '12%', top: '76%', width: '76%', height: '19%' }]}
+                style={[styles.hotspot, { left: '20%', top: '77%', width: '60%', height: '11%' }]}
               />
             </View>
           </View>
