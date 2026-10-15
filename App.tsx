@@ -7,6 +7,7 @@ import {
   Pressable,
   StatusBar,
   StyleSheet,
+  Text,
   View,
   useWindowDimensions,
 } from 'react-native';
@@ -20,16 +21,28 @@ const settingsMenuImage = require('./assets/buttons/settings-menu.png');
 
 type WelcomeAction = 'Create Game' | 'Join Game';
 
-function showComingSoon(action: WelcomeAction) {
-  const message = `${action} will be connected when we build that screen.`;
-
+function showMessage(title: string, message: string) {
   if (Platform.OS === 'web') {
-    window.alert(message);
+    window.alert(`${title}\n\n${message}`);
     return;
   }
-
-  Alert.alert(action, message);
+  Alert.alert(title, message);
 }
+
+function showComingSoon(action: WelcomeAction) {
+  showMessage(action, `${action} will be connected when we build that screen.`);
+}
+
+const howToPlayText =
+  'RISK THE WIN — QUICK RULES\n\n' +
+  '• Match the active color or the character shown on the top discard card.\n' +
+  '• Colored special cards must match the active color. A Wild can be played on any turn and lets you choose a color.\n' +
+  '• On a normal turn, draw until you find a playable card. You may keep drawing, then play any legal card you drew that turn.\n' +
+  '• Skip skips the next player. Reverse changes the direction of play.\n' +
+  '• Challenge: the next player may play a matching character card instead of drawing two cards. A Wild is not a Challenge response.\n' +
+  '• Triple Draw: the next player draws three cards unless they stack a Triple Draw. The first card must match the active color; later stacked cards may be any color.\n' +
+  '• If a Challenge response is your last card, Final Showdown starts. The selected opponent gets a multiple-choice question with a 20-second timer.\n' +
+  '• The first player to get rid of all their cards wins, unless Final Showdown rules decide the result.';
 
 export default function App() {
   const { width, height } = useWindowDimensions();
@@ -126,27 +139,30 @@ export default function App() {
                 resizeMode="contain"
                 accessibilityLabel="Settings menu with sound effects, background music, how to play, and back"
               />
-              {/* Hotspots align with the controls drawn into the menu artwork. */}
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={soundEffectsOn ? 'Turn sound effects off' : 'Turn sound effects on'}
                 onPress={() => setSoundEffectsOn((value) => !value)}
                 style={[styles.hotspot, { left: '70%', top: '35%', width: '24%', height: '12%' }]}
-              />
+              >
+                <View style={[styles.statusPill, soundEffectsOn ? styles.statusOn : styles.statusOff]}>
+                  <Text style={styles.statusText}>{soundEffectsOn ? 'ON' : 'OFF'}</Text>
+                </View>
+              </Pressable>
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={backgroundMusicOn ? 'Turn background music off' : 'Turn background music on'}
                 onPress={() => setBackgroundMusicOn((value) => !value)}
                 style={[styles.hotspot, { left: '70%', top: '49%', width: '24%', height: '12%' }]}
-              />
+              >
+                <View style={[styles.statusPill, backgroundMusicOn ? styles.statusOn : styles.statusOff]}>
+                  <Text style={styles.statusText}>{backgroundMusicOn ? 'ON' : 'OFF'}</Text>
+                </View>
+              </Pressable>
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="How to Play"
-                onPress={() => {
-                  const message = 'The RISK THE WIN rules will be shown here when we build the How to Play screen.';
-                  if (Platform.OS === 'web') window.alert(message);
-                  else Alert.alert('How to Play', message);
-                }}
+                onPress={() => showMessage('How to Play', howToPlayText)}
                 style={[styles.hotspot, { left: '24%', top: '62%', width: '70%', height: '13%' }]}
               />
               <Pressable
@@ -239,5 +255,27 @@ const styles = StyleSheet.create({
   hotspot: {
     position: 'absolute',
     backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statusPill: {
+    minWidth: 38,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#F8D98A',
+  },
+  statusOn: {
+    backgroundColor: '#21864A',
+  },
+  statusOff: {
+    backgroundColor: '#6B2733',
+  },
+  statusText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 12,
+    textAlign: 'center',
   },
 });
