@@ -143,7 +143,7 @@ export default function App() {
                   onPress={() => { setSelectedCharacter(character); setPendingCharacter(character); setPlayerName(''); setJoinDialogOpen(true); }}
                   style={[
                     styles.lobbyPortraitSlot,
-                    { left: `${4.5 + col * 19.2}%`, top: `${33.6 + row * 9.1}%`, width: '17.2%', height: '9.0%' },
+                    { left: `${4.5 + col * 19.2}%`, top: `${33.6 + row * 9.1 + (row === 3 ? 9.1 : 0)}%`, width: '17.2%', height: '9.0%' },
                     selected && styles.lobbyPortraitSelected,
                     taken && styles.lobbyPortraitTaken,
                   ]}
