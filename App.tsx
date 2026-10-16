@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   rosterCopy:{minWidth:0,flex:1,justifyContent:'center',gap:2},
   rosterName:{color:'#FFFFFF',fontSize:9,fontWeight:'800',lineHeight:13},
   rosterStatus:{color:'#19E987',fontSize:7,fontWeight:'800',lineHeight:11},
-  roomCountBadge:{position:'absolute',zIndex:9,left:'53%',top:'19.3%',width:'25%',height:'7.8%',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(6,21,42,0.98)',borderLeftWidth:1,borderRightWidth:1,borderColor:'#D4A83E'},
+  roomCountBadge:{position:'absolute',zIndex:9,left:'59%',top:'19.3%',width:'25%',height:'7.8%',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(6,21,42,0.98)',borderLeftWidth:1,borderRightWidth:1,borderColor:'#D4A83E'},
   roomCountText:{color:'#FFFFFF',fontSize:12,fontWeight:'900',lineHeight:18},
   roomCountSubtext:{color:'#FFDC55',fontSize:8,fontWeight:'900',lineHeight:12},
   joinDialogOverlay:{...StyleSheet.absoluteFillObject,zIndex:20,alignItems:'center',justifyContent:'center',padding:'8%'},
