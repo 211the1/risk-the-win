@@ -97,7 +97,7 @@ export default function App() {
     if (!characterToJoin) { showMessage('Choose a character', 'Tap one of the nine character portraits first.'); return; }
     const alreadyTaken = joinedPlayers.some(p => p.character === characterToJoin);
     if (alreadyTaken) { showMessage('Character taken', 'Choose a character that has not been claimed.'); return; }
-    if (joinedPlayers.length >= 12) { showMessage('Room full', 'This room is limited to 12 players.'); return; }
+    if (joinedPlayers.length >= 9) { showMessage('Room full', 'This room is limited to 9 players.'); return; }
     setJoinedPlayers(previous => [...previous, { name, character: characterToJoin }]);
     setPlayerName('');
     setSelectedCharacter(null);
@@ -153,7 +153,7 @@ export default function App() {
               );
             })}
             <View pointerEvents="box-none" style={styles.rosterPanel}>
-              <Text style={styles.rosterTitle}>PLAYERS ({joinedPlayers.length} / 12)</Text>
+              <Text style={styles.rosterTitle}>PLAYERS ({joinedPlayers.length} / 9)</Text>
               {characters.map((character, index) => {
                 const player = joinedPlayers.find(item => item.character === character);
                 const isHostSlot = index === 0;
@@ -176,7 +176,7 @@ export default function App() {
               })}
             </View>
             <View pointerEvents="none" style={styles.roomCountBadge}>
-              <Text style={styles.roomCountText}>{joinedPlayers.length} / 12</Text>
+              <Text style={styles.roomCountText}>{joinedPlayers.length} / 9</Text>
               <Text style={styles.roomCountSubtext}>PLAYERS</Text>
             </View>
             {joinDialogOpen && (
