@@ -12,6 +12,7 @@ const joinGameImage = require('./assets/buttons/join-game.png');
 const settingsImage = require('./assets/buttons/settings-button.png');
 const settingsMenuImage = require('./assets/buttons/settings-menu.png');
 const howToPlayMenuImage = require('./assets/buttons/how-to-play-menu.png');
+const playerNamePanelImage = require('./assets/ui/player-name-panel.png');
 
 type WelcomeAction = 'Create Game' | 'Join Game';
 type Screen = 'welcome' | 'lobby';
@@ -186,13 +187,33 @@ export default function App() {
               <View style={styles.joinDialogOverlay}>
                 <Pressable accessibilityRole="button" accessibilityLabel="Cancel joining" onPress={() => { setJoinDialogOpen(false); setPendingCharacter(null); setSelectedCharacter(null); }} style={styles.joinDialogBackdrop} />
                 <View style={styles.joinDialog}>
-                  <Text style={styles.joinDialogTitle}>CHOOSE YOUR PLAYER NAME</Text>
-                  <Text style={styles.joinDialogMessage}>Playing as {pendingCharacter}. Enter the name your friends will see.</Text>
-                  <TextInput value={playerName} onChangeText={setPlayerName} maxLength={16} placeholder="Enter your name" placeholderTextColor="#9CAAC0" autoCapitalize="words" style={styles.joinNameInput} returnKeyType="done" onSubmitEditing={saveAndJoin} />
-                  <View style={styles.joinDialogActions}>
-                    <Pressable accessibilityRole="button" onPress={() => { setJoinDialogOpen(false); setPendingCharacter(null); setSelectedCharacter(null); }} style={styles.joinCancelButton}><Text style={styles.joinButtonText}>CANCEL</Text></Pressable>
-                    <Pressable accessibilityRole="button" onPress={saveAndJoin} style={styles.joinSaveButton}><Text style={styles.joinButtonText}>SAVE & JOIN</Text></Pressable>
-                  </View>
+                  <Image source={playerNamePanelImage} style={styles.joinPanelArtwork} resizeMode="contain" />
+                  <Text style={styles.joinDialogMessage}>Playing as {pendingCharacter}</Text>
+                  <TextInput
+                    accessibilityLabel="Enter your player name"
+                    value={playerName}
+                    onChangeText={setPlayerName}
+                    maxLength={16}
+                    placeholder="Enter your name"
+                    placeholderTextColor="#8792A6"
+                    autoCapitalize="words"
+                    autoCorrect={false}
+                    style={styles.joinNameInput}
+                    returnKeyType="done"
+                    onSubmitEditing={saveAndJoin}
+                  />
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Cancel"
+                    onPress={() => { setJoinDialogOpen(false); setPendingCharacter(null); setSelectedCharacter(null); setPlayerName(''); }}
+                    style={styles.joinCancelButton}
+                  />
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Save and join"
+                    onPress={saveAndJoin}
+                    style={styles.joinSaveButton}
+                  />
                 </View>
               </View>
             )}
@@ -265,14 +286,12 @@ const styles = StyleSheet.create({
   roomCountSubtext:{color:'#FFDC55',fontSize:8,fontWeight:'900',lineHeight:12},
   joinDialogOverlay:{...StyleSheet.absoluteFillObject,zIndex:20,alignItems:'center',justifyContent:'center',padding:'8%'},
   joinDialogBackdrop:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(0,0,0,0.68)'},
-  joinDialog:{width:'100%',maxWidth:420,padding:16,borderWidth:2,borderColor:'#E8BD4E',borderRadius:16,backgroundColor:'#07172D',shadowColor:'#F2BF4A',shadowOpacity:0.28,shadowRadius:16,elevation:14},
-  joinDialogTitle:{color:'#FFDA63',fontSize:18,fontWeight:'900',textAlign:'center',marginBottom:8},
-  joinDialogMessage:{color:'#FFFFFF',fontSize:13,lineHeight:20,textAlign:'center',marginBottom:12},
-  joinNameInput:{width:'100%',padding:11,borderRadius:9,borderWidth:2,borderColor:'#E8BD4E',backgroundColor:'#FFFFFF',color:'#07162A',fontSize:16,marginBottom:12},
-  joinDialogActions:{flexDirection:'row',justifyContent:'center',gap:8},
-  joinCancelButton:{flex:1,alignItems:'center',justifyContent:'center',paddingVertical:11,borderRadius:9,borderWidth:1,borderColor:'#D8AD42',backgroundColor:'#263C57'},
-  joinSaveButton:{flex:1,alignItems:'center',justifyContent:'center',paddingVertical:11,borderRadius:9,borderWidth:1,borderColor:'#F0CB64',backgroundColor:'#087B37'},
-  joinButtonText:{color:'#FFFFFF',fontSize:11,fontWeight:'900'},
+  joinDialog:{width:'96%',maxWidth:650,aspectRatio:1.5,alignSelf:'center',justifyContent:'center'},
+  joinPanelArtwork:{...StyleSheet.absoluteFillObject,width:'100%',height:'100%'},
+  joinDialogMessage:{position:'absolute',top:'43%',left:'12%',width:'76%',color:'#FFFFFF',fontSize:13,fontWeight:'700',textAlign:'center'},
+  joinNameInput:{position:'absolute',left:'10%',top:'53%',width:'80%',height:'15%',paddingHorizontal:14,paddingVertical:4,borderRadius:12,borderWidth:0,backgroundColor:'transparent',color:'#17243B',fontSize:18},
+  joinCancelButton:{position:'absolute',left:'12%',top:'72%',width:'35%',height:'17%',backgroundColor:'transparent'},
+  joinSaveButton:{position:'absolute',left:'53%',top:'72%',width:'35%',height:'17%',backgroundColor:'transparent'},
   lobbyRoot:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(7,12,28,0.34)',paddingTop:Platform.OS==='web'?18:30,paddingHorizontal:12,paddingBottom:8},
   lobbyTop:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8,marginBottom:10},
   roomHeader:{alignItems:'center',flex:1},
