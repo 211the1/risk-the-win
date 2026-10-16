@@ -120,7 +120,7 @@ export default function App() {
                       const selected = selectedCharacter === character;
                       return <Pressable key={character} disabled={taken} onPress={() => setSelectedCharacter(character)} style={[styles.characterTile, selected && styles.characterSelected, taken && styles.characterTaken]}>
                         <View style={styles.avatarFrame}>
-                          <Image source={characterPortraits[character]} style={styles.avatarPortrait} resizeMode="cover" accessibilityLabel={character} />
+                          <Image source={characterPortraits[character]} style={styles.avatarPortrait} resizeMode="contain" accessibilityLabel={character} />
                         </View>
                         <Text numberOfLines={1} style={styles.characterName}>{character}</Text>
                         <Text style={styles.tileStatus}>{taken ? 'TAKEN' : selected ? 'SELECTED' : 'AVAILABLE'}</Text>
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   buttonArtwork:{width:'100%',height:'100%'},
   settingsButton:{position:'absolute',alignItems:'center',justifyContent:'center'},
   settingsArtwork:{width:'100%',height:'100%'},
-  lobbyRoot:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(12,15,25,0.92)',paddingTop:Platform.OS==='web'?18:30,paddingHorizontal:12,paddingBottom:8},
+  lobbyRoot:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(7,12,28,0.34)',paddingTop:Platform.OS==='web'?18:30,paddingHorizontal:12,paddingBottom:8},
   lobbyTop:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8,marginBottom:10},
   roomHeader:{alignItems:'center',flex:1},
   lobbyTitle:{color:'#F6D58A',fontSize:20,fontWeight:'900',letterSpacing:2},
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   smallButtonText:{color:'#F8D98A',fontSize:11,fontWeight:'900'},
   lobbyScroll:{paddingBottom:18},
   lobbyColumns:{flexDirection:'column',alignItems:'stretch',gap:12,maxWidth:1100,width:'100%',alignSelf:'center'},
-  pickPanel:{flex:1.05,backgroundColor:'rgba(28,27,38,0.94)',borderColor:'#9C793E',borderWidth:1,borderRadius:16,padding:12},
+  pickPanel:{flex:1.05,backgroundColor:'rgba(7,16,37,0.88)',borderColor:'#9C793E',borderWidth:1,borderRadius:16,padding:12},
   playersPanel:{flex:0.95,backgroundColor:'rgba(28,27,38,0.94)',borderColor:'#9C793E',borderWidth:1,borderRadius:16,padding:12},
   panelTitle:{color:'#F6D58A',fontSize:14,fontWeight:'900',letterSpacing:1.1},
   panelSub:{color:'#D2C7B2',fontSize:11,marginTop:4,marginBottom:12},
