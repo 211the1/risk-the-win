@@ -71,11 +71,12 @@ export default function App() {
   function saveAndJoin() {
     const name = playerName.trim();
     if (!name) { showMessage('Player name needed', 'Enter the name you want other players to see.'); return; }
-    if (!pendingCharacter) { showMessage('Choose a character', 'Tap one of the nine character portraits first.'); return; }
-    const alreadyTaken = joinedPlayers.some(p => p.character === pendingCharacter);
+    const characterToJoin = pendingCharacter;
+    if (!characterToJoin) { showMessage('Choose a character', 'Tap one of the nine character portraits first.'); return; }
+    const alreadyTaken = joinedPlayers.some(p => p.character === characterToJoin);
     if (alreadyTaken) { showMessage('Character taken', 'Choose a character that has not been claimed.'); return; }
     if (joinedPlayers.length >= 8) { showMessage('Room full', 'This room is limited to 8 players.'); return; }
-    setJoinedPlayers(previous => [...previous, { name, character: pendingCharacter }]);
+    setJoinedPlayers(previous => [...previous, { name, character: characterToJoin }]);
     setPlayerName('');
     setSelectedCharacter(null);
     setPendingCharacter(null);
