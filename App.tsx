@@ -75,7 +75,7 @@ export default function App() {
     if (!characterToJoin) { showMessage('Choose a character', 'Tap one of the nine character portraits first.'); return; }
     const alreadyTaken = joinedPlayers.some(p => p.character === characterToJoin);
     if (alreadyTaken) { showMessage('Character taken', 'Choose a character that has not been claimed.'); return; }
-    if (joinedPlayers.length >= 8) { showMessage('Room full', 'This room is limited to 8 players.'); return; }
+    if (joinedPlayers.length >= 9) { showMessage('Room full', 'This room is limited to 9 players.'); return; }
     setJoinedPlayers(previous => [...previous, { name, character: characterToJoin }]);
     setPlayerName('');
     setSelectedCharacter(null);
@@ -131,20 +131,30 @@ export default function App() {
               );
             })}
             <View pointerEvents="box-none" style={styles.rosterPanel}>
-              <Text style={styles.rosterTitle}>PLAYERS ({joinedPlayers.length} / 8)</Text>
-              {joinedPlayers.map((player, index) => (
-                <View key={player.character} style={styles.rosterRow}>
-                  <Text style={styles.rosterRank}>{index + 1}</Text>
-                  <Image source={characterPortraits[player.character]} style={styles.rosterAvatar} resizeMode="contain" />
-                  <View style={styles.rosterCopy}>
-                    <Text numberOfLines={1} style={styles.rosterName}>{player.name}</Text>
-                    <Text numberOfLines={1} style={styles.rosterStatus}>● READY · {player.character}</Text>
+              <Text style={styles.rosterTitle}>PLAYERS ({joinedPlayers.length} / 9)</Text>
+              {characters.map((character, index) => {
+                const player = joinedPlayers.find(item => item.character === character);
+                const isHostSlot = index === 0;
+                return (
+                  <View key={character} style={[styles.rosterRow, !player && styles.rosterEmptyRow]}>
+                    <View style={styles.rosterRank}>
+                      {isHostSlot ? <Text style={styles.hostCrown}>♛</Text> : <Text style={styles.rosterRankText}>{index + 1}</Text>}
+                    </View>
+                    {player ? (
+                      <Image source={characterPortraits[player.character]} style={styles.rosterAvatar} resizeMode="contain" />
+                    ) : (
+                      <View style={styles.rosterAvatarEmpty}><Text style={styles.rosterEmptyNumber}>{index + 1}</Text></View>
+                    )}
+                    <View style={styles.rosterCopy}>
+                      <Text numberOfLines={1} style={[styles.rosterName, !player && styles.rosterWaitingName]}>{player ? player.name : (isHostSlot ? 'HOST' : 'Waiting for player')}</Text>
+                      <Text numberOfLines={1} style={[styles.rosterStatus, !player && styles.rosterWaitingStatus]}>{player ? (isHostSlot ? '♛ HOST · READY' : '● READY') : (isHostSlot ? 'HOST SLOT' : 'EMPTY SLOT')}</Text>
+                    </View>
                   </View>
-                </View>
-              ))}
+                );
+              })}
             </View>
             <View pointerEvents="none" style={styles.roomCountBadge}>
-              <Text style={styles.roomCountText}>{joinedPlayers.length} / 8</Text>
+              <Text style={styles.roomCountText}>{joinedPlayers.length} / 9</Text>
               <Text style={styles.roomCountSubtext}>PLAYERS</Text>
             </View>
             {joinDialogOpen && (
@@ -213,8 +223,15 @@ const styles = StyleSheet.create({
   rosterPanel:{position:'absolute',zIndex:8,left:'66.3%',top:'29.7%',width:'25.2%',height:'50.5%',paddingVertical:'1.2%',paddingHorizontal:'1.1%',display:'flex',flexDirection:'column',gap:3,backgroundColor:'rgba(5,17,38,0.97)',borderColor:'#D9A936',borderWidth:2,borderRadius:9,shadowColor:'#000',shadowOpacity:0.65,shadowRadius:8,elevation:8},
   rosterTitle:{height:'5%',textAlign:'center',textAlignVertical:'center',color:'#FFDC55',fontWeight:'900',fontSize:10,lineHeight:14},
   rosterRow:{minHeight:0,flex:1,flexDirection:'row',alignItems:'center',gap:3,paddingHorizontal:3,borderWidth:1,borderColor:'#21496D',borderRadius:6,backgroundColor:'#0A203A',overflow:'hidden'},
-  rosterRank:{width:'7%',flexShrink:0,textAlign:'center',color:'#FFD65B',fontWeight:'900',fontSize:10},
+  rosterEmptyRow:{backgroundColor:'rgba(6,22,42,0.7)',borderColor:'#34465D'},
+  rosterRank:{width:'7%',flexShrink:0,alignItems:'center',justifyContent:'center'},
+  rosterRankText:{textAlign:'center',color:'#FFD65B',fontWeight:'900',fontSize:10},
+  hostCrown:{textAlign:'center',color:'#FFDA55',fontSize:16,fontWeight:'900'},
   rosterAvatar:{width:'18%',height:'86%',flexShrink:0,aspectRatio:1,borderRadius:50,borderWidth:1,borderColor:'#D8AD42',backgroundColor:'#071326'},
+  rosterAvatarEmpty:{width:'18%',height:'86%',flexShrink:0,aspectRatio:1,borderRadius:50,borderWidth:1,borderStyle:'dashed',borderColor:'#65748A',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(7,19,38,0.8)'},
+  rosterEmptyNumber:{color:'#71839A',fontSize:9,fontWeight:'800'},
+  rosterWaitingName:{color:'#8290A3',fontWeight:'600'},
+  rosterWaitingStatus:{color:'#66778B'},
   rosterCopy:{minWidth:0,flex:1,justifyContent:'center',gap:2},
   rosterName:{color:'#FFFFFF',fontSize:9,fontWeight:'800',lineHeight:13},
   rosterStatus:{color:'#19E987',fontSize:7,fontWeight:'800',lineHeight:11},
