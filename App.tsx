@@ -143,7 +143,7 @@ export default function App() {
                   onPress={() => { setSelectedCharacter(character); setPendingCharacter(character); setPlayerName(''); setJoinDialogOpen(true); }}
                   style={[
                     styles.lobbyPortraitSlot,
-                    { left: `${4.5 + col * 19.2}%`, top: `${34.2 + row * 9.1}%`, width: '17.2%', height: '7.6%' },
+                    { left: `${4.5 + col * 19.2}%`, top: `${33.6 + row * 9.1}%`, width: '17.2%', height: '9.0%' },
                     selected && styles.lobbyPortraitSelected,
                     taken && styles.lobbyPortraitTaken,
                   ]}
@@ -238,8 +238,8 @@ const styles = StyleSheet.create({
   settingsArtwork:{width:'100%',height:'100%'},
   lobbyArtworkRoot:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
   lobbyHotspot:{position:'absolute',backgroundColor:'transparent'},
-  lobbyPortraitSlot:{position:'absolute',alignItems:'center',justifyContent:'center',overflow:'hidden',borderRadius:10,padding:'1%',backgroundColor:'rgba(4,22,42,0.18)'},
-  lobbyPortraitImage:{width:'88%',height:'88%',alignSelf:'center',flexShrink:0},
+  lobbyPortraitSlot:{position:'absolute',alignItems:'center',justifyContent:'center',overflow:'hidden',borderRadius:10,padding:0,backgroundColor:'transparent'},
+  lobbyPortraitImage:{width:'100%',height:'100%',alignSelf:'center',flexShrink:0},
   lobbyPortraitSelected:{borderColor:'#FFF2A2',borderWidth:2,backgroundColor:'rgba(255,211,77,0.18)'},
   lobbyPortraitTaken:{opacity:0.35},
   rosterPanel:{position:'absolute',zIndex:8,left:'66.3%',top:'29.7%',width:'25.2%',height:'50.5%',paddingVertical:'1.2%',paddingHorizontal:'1.1%',display:'flex',flexDirection:'column',gap:3,backgroundColor:'rgba(5,17,38,0.97)',borderColor:'#D9A936',borderWidth:2,borderRadius:9,shadowColor:'#000',shadowOpacity:0.65,shadowRadius:8,elevation:8},
