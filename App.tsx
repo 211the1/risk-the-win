@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   lobbyPortraitImage:{width:'100%',height:'100%'},
   lobbyPortraitSelected:{borderColor:'#FFF2A2',borderWidth:2,backgroundColor:'rgba(255,211,77,0.18)'},
   lobbyPortraitTaken:{opacity:0.35},
-  rosterPanel:{position:'absolute',zIndex:8,left:'64.8%',top:'29.7%',width:'28.2%',height:'56.5%',paddingVertical:'1.2%',paddingHorizontal:'1.1%',display:'flex',flexDirection:'column',gap:3,backgroundColor:'rgba(5,17,38,0.97)',borderColor:'#D9A936',borderWidth:2,borderRadius:9,shadowColor:'#000',shadowOpacity:0.65,shadowRadius:8,elevation:8},
+  rosterPanel:{position:'absolute',zIndex:8,left:'66.3%',top:'29.7%',width:'25.2%',height:'50.5%',paddingVertical:'1.2%',paddingHorizontal:'1.1%',display:'flex',flexDirection:'column',gap:3,backgroundColor:'rgba(5,17,38,0.97)',borderColor:'#D9A936',borderWidth:2,borderRadius:9,shadowColor:'#000',shadowOpacity:0.65,shadowRadius:8,elevation:8},
   rosterTitle:{height:'5%',textAlign:'center',textAlignVertical:'center',color:'#FFDC55',fontWeight:'900',fontSize:10,lineHeight:14},
   rosterRow:{minHeight:0,flex:1,flexDirection:'row',alignItems:'center',gap:3,paddingHorizontal:3,borderWidth:1,borderColor:'#21496D',borderRadius:6,backgroundColor:'#0A203A',overflow:'hidden'},
   rosterRank:{width:'7%',flexShrink:0,textAlign:'center',color:'#FFD65B',fontWeight:'900',fontSize:10},
