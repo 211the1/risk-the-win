@@ -6,6 +6,7 @@ import {
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 
 const backgroundImage = require('./assets/backgrounds/welcome-background.png');
+const lobbyBackgroundImage = require('./assets/backgrounds/lobby-character-selection.png');
 const createGameImage = require('./assets/buttons/create-game.png');
 const joinGameImage = require('./assets/buttons/join-game.png');
 const settingsImage = require('./assets/buttons/settings-button.png');
@@ -82,7 +83,7 @@ export default function App() {
     <View style={styles.root}>
       <StatusBar hidden />
       <ExpoStatusBar hidden />
-      <ImageBackground source={backgroundImage} resizeMode="contain" style={styles.background} imageStyle={styles.backgroundImage}>
+      <ImageBackground source={screen === 'lobby' ? lobbyBackgroundImage : backgroundImage} resizeMode={screen === 'lobby' ? 'stretch' : 'contain'} style={styles.background} imageStyle={styles.backgroundImage}>
         {screen === 'welcome' ? (
           <View style={[styles.controls, { paddingBottom: Math.max(24, height * 0.045) }]}>
             <View style={[styles.menu, { width: menuWidth }]}>
@@ -100,53 +101,35 @@ export default function App() {
             </View>
           </View>
         ) : (
-          <View style={styles.lobbyRoot}>
-            <View style={styles.lobbyTop}>
-              <Pressable onPress={() => setScreen('welcome')} style={styles.smallButton}><Text style={styles.smallButtonText}>‹ BACK</Text></Pressable>
-              <View style={styles.roomHeader}>
-                <Text style={styles.lobbyTitle}>RISK THE WIN</Text>
-                <Text style={styles.roomMeta}>ROOM {roomCode}  •  {joinedPlayers.length}/8 PLAYERS</Text>
-              </View>
-              <Pressable onPress={() => showMessage('Invite Friends', `Share room code ${roomCode} with your friends. Online joining is not connected yet.`)} style={styles.smallButton}><Text style={styles.smallButtonText}>INVITE</Text></Pressable>
-            </View>
-            <ScrollView contentContainerStyle={styles.lobbyScroll} showsVerticalScrollIndicator={false}>
-              <View style={styles.lobbyColumns}>
-                <View style={styles.pickPanel}>
-                  <Text style={styles.panelTitle}>CHOOSE YOUR CHARACTER</Text>
-                  <Text style={styles.panelSub}>Each character can be picked once.</Text>
-                  <View style={styles.characterGrid}>
-                    {characters.map((character, index) => {
-                      const taken = joinedPlayers.some(p => p.character === character);
-                      const selected = selectedCharacter === character;
-                      return <Pressable key={character} disabled={taken} onPress={() => setSelectedCharacter(character)} style={[styles.characterTile, selected && styles.characterSelected, taken && styles.characterTaken]}>
-                        <View style={styles.avatarFrame}>
-                          <Image source={characterPortraits[character]} style={styles.avatarPortrait} resizeMode="contain" accessibilityLabel={character} />
-                        </View>
-                        <Text numberOfLines={1} style={styles.characterName}>{character}</Text>
-                        <Text style={styles.tileStatus}>{taken ? 'TAKEN' : selected ? 'SELECTED' : 'AVAILABLE'}</Text>
-                      </Pressable>;
-                    })}
-                  </View>
-                  <Text style={styles.fieldLabel}>YOUR PLAYER NAME</Text>
-                  <TextInput value={playerName} onChangeText={setPlayerName} placeholder="Enter your name" placeholderTextColor="#B7B1A5" maxLength={18} style={styles.nameInput} returnKeyType="done" />
-                  <Pressable onPress={saveAndJoin} style={({pressed})=>[styles.joinButton,pressed&&{opacity:0.8}]}><Text style={styles.joinButtonText}>SAVE & JOIN</Text></Pressable>
-                </View>
-                <View style={styles.playersPanel}>
-                  <Text style={styles.panelTitle}>PLAYERS IN ROOM</Text>
-                  <Text style={styles.panelSub}>{joinedPlayers.length ? 'Players ready to play' : 'Waiting for players to join'}</Text>
-                  {Array.from({length:8},(_,i)=>{
-                    const player=joinedPlayers[i];
-                    return <View key={i} style={styles.playerRow}>
-                      <View style={styles.playerNumber}><Text style={styles.playerNumberText}>{i+1}</Text></View>
-                      <View style={styles.playerInfo}><Text style={styles.playerName}>{player?.name || 'Waiting for player...'}</Text><Text style={styles.playerCharacter}>{player?.character || 'Open seat'}</Text></View>
-                      <Text style={[styles.readyTag, !player&&styles.waitingTag]}>{player?'READY':'WAITING'}</Text>
-                    </View>;
-                  })}
-                  <Pressable onPress={() => showMessage('Start Game','The lobby screen is connected to local selection. Starting a real multiplayer match will be enabled after the game server is connected.')} style={styles.startButton}><Text style={styles.startButtonText}>START GAME</Text></Pressable>
-                  <Text style={styles.localNote}>LOBBY PREVIEW • SERVER NOT CONNECTED</Text>
-                </View>
-              </View>
-            </ScrollView>
+          <View style={styles.lobbyArtworkRoot}>
+            {/* The uploaded lobby artwork is the screen background; these controls sit over its matching areas. */}
+            {characters.map((character, index) => {
+              const col = index % 3;
+              const row = Math.floor(index / 3);
+              const taken = joinedPlayers.some(p => p.character === character);
+              const selected = selectedCharacter === character;
+              return (
+                <Pressable
+                  key={character}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Choose ${character}`}
+                  disabled={taken}
+                  onPress={() => setSelectedCharacter(character)}
+                  style={[
+                    styles.lobbyPortraitSlot,
+                    { left: `${6.0 + col * 18.1}%`, top: `${33.7 + row * 12.1}%`, width: '16.5%', height: '10.8%' },
+                    selected && styles.lobbyPortraitSelected,
+                    taken && styles.lobbyPortraitTaken,
+                  ]}
+                >
+                  <Image source={characterPortraits[character]} style={styles.lobbyPortraitImage} resizeMode="contain" accessibilityLabel={character} />
+                </Pressable>
+              );
+            })}
+            <Pressable accessibilityRole="button" accessibilityLabel="Back to welcome screen" onPress={() => setScreen('welcome')} style={[styles.lobbyHotspot, { left: '1%', top: '6%', width: '25%', height: '7%' }]} />
+            <Pressable accessibilityRole="button" accessibilityLabel="Start game" onPress={() => showMessage('Start Game', selectedCharacter ? `You selected ${selectedCharacter}. Online multiplayer and game start still need the server connection.` : 'Choose a character first.')} style={[styles.lobbyHotspot, { left: '3%', top: '85%', width: '48%', height: '10%' }]} />
+            <Pressable accessibilityRole="button" accessibilityLabel="Invite friends" onPress={() => showMessage('Invite Friends', 'The lobby artwork is in place. Room creation and invitations need the multiplayer server connection.')} style={[styles.lobbyHotspot, { left: '54%', top: '85%', width: '43%', height: '10%' }]} />
+            <Pressable accessibilityRole="button" accessibilityLabel="Copy room code" onPress={() => showMessage('Room Code', 'Room code entry and sharing will be connected when the multiplayer lobby server is added.')} style={[styles.lobbyHotspot, { left: '45%', top: '19%', width: '11%', height: '7%' }]} />
           </View>
         )}
         {settingsOpen && !howToPlayOpen && screen === 'welcome' && (
@@ -186,6 +169,12 @@ const styles = StyleSheet.create({
   buttonArtwork:{width:'100%',height:'100%'},
   settingsButton:{position:'absolute',alignItems:'center',justifyContent:'center'},
   settingsArtwork:{width:'100%',height:'100%'},
+  lobbyArtworkRoot:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
+  lobbyHotspot:{position:'absolute',backgroundColor:'transparent'},
+  lobbyPortraitSlot:{position:'absolute',alignItems:'center',justifyContent:'center',overflow:'hidden',borderRadius:10},
+  lobbyPortraitImage:{width:'100%',height:'100%'},
+  lobbyPortraitSelected:{borderColor:'#FFF2A2',borderWidth:2,backgroundColor:'rgba(255,211,77,0.18)'},
+  lobbyPortraitTaken:{opacity:0.35},
   lobbyRoot:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(7,12,28,0.34)',paddingTop:Platform.OS==='web'?18:30,paddingHorizontal:12,paddingBottom:8},
   lobbyTop:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8,marginBottom:10},
   roomHeader:{alignItems:'center',flex:1},
