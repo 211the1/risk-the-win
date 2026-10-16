@@ -60,6 +60,7 @@ export default function App() {
   const [playerName, setPlayerName] = useState('');
   const [roomCode, setRoomCode] = useState('WIN-482');
   const [joinedPlayers, setJoinedPlayers] = useState<{name: string; character: string}[]>([]);
+  const hostHasChosenCharacter = joinedPlayers.length > 0;
   const compact = width < 500;
   const menuWidth = Math.min(width, height * (2 / 3));
   const buttonWidth = Math.min(menuWidth * 0.84, 440);
@@ -117,7 +118,7 @@ export default function App() {
                 <Pressable accessibilityRole="button" accessibilityLabel="Create Game" onPress={() => enterLobby('Create Game')} style={({pressed}) => [styles.mainButton,{width:buttonWidth,height:buttonHeight,opacity:pressed?0.82:1}]}>
                   <Image source={createGameImage} style={styles.buttonArtwork} resizeMode="contain" />
                 </Pressable>
-                <Pressable accessibilityRole="button" accessibilityLabel="Join Game" onPress={() => enterLobby('Join Game')} style={({pressed}) => [styles.mainButton,{width:buttonWidth,height:buttonHeight,opacity:pressed?0.82:1}]}>
+                <Pressable accessibilityRole="button" accessibilityLabel="Join Game" disabled={!hostHasChosenCharacter} onPress={() => { if (hostHasChosenCharacter) enterLobby('Join Game'); }} style={({pressed}) => [styles.mainButton,{width:buttonWidth,height:buttonHeight,opacity:!hostHasChosenCharacter?0.42:(pressed?0.82:1)}]}>
                   <Image source={joinGameImage} style={styles.buttonArtwork} resizeMode="contain" />
                 </Pressable>
               </View>
