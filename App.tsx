@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   characterTile:{width:'31%',minWidth:78,maxWidth:140,alignItems:'center',paddingVertical:8,paddingHorizontal:4,borderWidth:1,borderColor:'#514658',borderRadius:10,backgroundColor:'#201D2A'},
   characterSelected:{borderColor:'#F6D58A',backgroundColor:'#443521',borderWidth:2},
   characterTaken:{opacity:0.42},
-  avatar:{width:compact?42:54,height:compact?42:54,borderRadius:27,alignItems:'center',justifyContent:'center',borderWidth:2,borderColor:'#D5B36D',marginBottom:5},
+  avatar:{width:48,height:48,borderRadius:27,alignItems:'center',justifyContent:'center',borderWidth:2,borderColor:'#D5B36D',marginBottom:5},
   avatarInitial:{color:'#FFFFFF',fontWeight:'900',fontSize:16},
   characterName:{color:'#FFF5E2',fontWeight:'800',fontSize:11},
   tileStatus:{color:'#D7B66F',fontSize:8,fontWeight:'900',marginTop:4},
