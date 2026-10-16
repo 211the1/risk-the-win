@@ -52,6 +52,8 @@ export default function App() {
   const [soundEffectsOn, setSoundEffectsOn] = useState(true);
   const [backgroundMusicOn, setBackgroundMusicOn] = useState(true);
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
+  const [pendingCharacter, setPendingCharacter] = useState<string | null>(null);
+  const [joinDialogOpen, setJoinDialogOpen] = useState(false);
   const [playerName, setPlayerName] = useState('');
   const [roomCode, setRoomCode] = useState('WIN-482');
   const [joinedPlayers, setJoinedPlayers] = useState<{name: string; character: string}[]>([]);
@@ -69,14 +71,15 @@ export default function App() {
   function saveAndJoin() {
     const name = playerName.trim();
     if (!name) { showMessage('Player name needed', 'Enter the name you want other players to see.'); return; }
-    if (!selectedCharacter) { showMessage('Choose a character', 'Select one of the nine characters first.'); return; }
-    const alreadyTaken = joinedPlayers.some(p => p.character === selectedCharacter);
+    if (!pendingCharacter) { showMessage('Choose a character', 'Tap one of the nine character portraits first.'); return; }
+    const alreadyTaken = joinedPlayers.some(p => p.character === pendingCharacter);
     if (alreadyTaken) { showMessage('Character taken', 'Choose a character that has not been claimed.'); return; }
     if (joinedPlayers.length >= 8) { showMessage('Room full', 'This room is limited to 8 players.'); return; }
-    setJoinedPlayers(previous => [...previous, { name, character: selectedCharacter }]);
+    setJoinedPlayers(previous => [...previous, { name, character: pendingCharacter }]);
     setPlayerName('');
     setSelectedCharacter(null);
-    showMessage('Joined lobby', 'Your player is listed as Ready on this device. Online multiplayer still needs a server connection.');
+    setPendingCharacter(null);
+    setJoinDialogOpen(false);
   }
 
   return (
@@ -114,7 +117,7 @@ export default function App() {
                   accessibilityRole="button"
                   accessibilityLabel={`Choose ${character}`}
                   disabled={taken}
-                  onPress={() => setSelectedCharacter(character)}
+                  onPress={() => { setSelectedCharacter(character); setPendingCharacter(character); setPlayerName(''); setJoinDialogOpen(true); }}
                   style={[
                     styles.lobbyPortraitSlot,
                     { left: `${6.0 + col * 18.1}%`, top: `${33.7 + row * 12.1}%`, width: '16.5%', height: '10.8%' },
@@ -126,6 +129,37 @@ export default function App() {
                 </Pressable>
               );
             })}
+            <View pointerEvents="box-none" style={styles.rosterPanel}>
+              <Text style={styles.rosterTitle}>PLAYERS ({joinedPlayers.length} / 8)</Text>
+              {joinedPlayers.map((player, index) => (
+                <View key={player.character} style={styles.rosterRow}>
+                  <Text style={styles.rosterRank}>{index + 1}</Text>
+                  <Image source={characterPortraits[player.character]} style={styles.rosterAvatar} resizeMode="contain" />
+                  <View style={styles.rosterCopy}>
+                    <Text numberOfLines={1} style={styles.rosterName}>{player.name}</Text>
+                    <Text numberOfLines={1} style={styles.rosterStatus}>● READY · {player.character}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+            <View pointerEvents="none" style={styles.roomCountBadge}>
+              <Text style={styles.roomCountText}>{joinedPlayers.length} / 8</Text>
+              <Text style={styles.roomCountSubtext}>PLAYERS</Text>
+            </View>
+            {joinDialogOpen && (
+              <View style={styles.joinDialogOverlay}>
+                <Pressable accessibilityRole="button" accessibilityLabel="Cancel joining" onPress={() => { setJoinDialogOpen(false); setPendingCharacter(null); setSelectedCharacter(null); }} style={styles.joinDialogBackdrop} />
+                <View style={styles.joinDialog}>
+                  <Text style={styles.joinDialogTitle}>CHOOSE YOUR PLAYER NAME</Text>
+                  <Text style={styles.joinDialogMessage}>Playing as {pendingCharacter}. Enter the name your friends will see.</Text>
+                  <TextInput value={playerName} onChangeText={setPlayerName} maxLength={16} placeholder="Enter your name" placeholderTextColor="#9CAAC0" autoCapitalize="words" style={styles.joinNameInput} returnKeyType="done" onSubmitEditing={saveAndJoin} />
+                  <View style={styles.joinDialogActions}>
+                    <Pressable accessibilityRole="button" onPress={() => { setJoinDialogOpen(false); setPendingCharacter(null); setSelectedCharacter(null); }} style={styles.joinCancelButton}><Text style={styles.joinButtonText}>CANCEL</Text></Pressable>
+                    <Pressable accessibilityRole="button" onPress={saveAndJoin} style={styles.joinSaveButton}><Text style={styles.joinButtonText}>SAVE & JOIN</Text></Pressable>
+                  </View>
+                </View>
+              </View>
+            )}
             <Pressable accessibilityRole="button" accessibilityLabel="Back to welcome screen" onPress={() => setScreen('welcome')} style={[styles.lobbyHotspot, { left: '1%', top: '6%', width: '25%', height: '7%' }]} />
             <Pressable accessibilityRole="button" accessibilityLabel="Start game" onPress={() => showMessage('Start Game', selectedCharacter ? `You selected ${selectedCharacter}. Online multiplayer and game start still need the server connection.` : 'Choose a character first.')} style={[styles.lobbyHotspot, { left: '3%', top: '85%', width: '48%', height: '10%' }]} />
             <Pressable accessibilityRole="button" accessibilityLabel="Invite friends" onPress={() => showMessage('Invite Friends', 'The lobby artwork is in place. Room creation and invitations need the multiplayer server connection.')} style={[styles.lobbyHotspot, { left: '54%', top: '85%', width: '43%', height: '10%' }]} />
@@ -175,6 +209,27 @@ const styles = StyleSheet.create({
   lobbyPortraitImage:{width:'100%',height:'100%'},
   lobbyPortraitSelected:{borderColor:'#FFF2A2',borderWidth:2,backgroundColor:'rgba(255,211,77,0.18)'},
   lobbyPortraitTaken:{opacity:0.35},
+  rosterPanel:{position:'absolute',zIndex:8,left:'64.8%',top:'29.7%',width:'28.2%',height:'56.5%',paddingVertical:'1.2%',paddingHorizontal:'1.1%',display:'flex',flexDirection:'column',gap:3,backgroundColor:'rgba(5,17,38,0.97)',borderColor:'#D9A936',borderWidth:2,borderRadius:9,shadowColor:'#000',shadowOpacity:0.65,shadowRadius:8,elevation:8},
+  rosterTitle:{height:'5%',textAlign:'center',textAlignVertical:'center',color:'#FFDC55',fontWeight:'900',fontSize:compact?9:12,lineHeight:14},
+  rosterRow:{minHeight:0,flex:1,flexDirection:'row',alignItems:'center',gap:3,paddingHorizontal:3,borderWidth:1,borderColor:'#21496D',borderRadius:6,backgroundColor:'#0A203A',overflow:'hidden'},
+  rosterRank:{width:'7%',flexShrink:0,textAlign:'center',color:'#FFD65B',fontWeight:'900',fontSize:compact?9:12},
+  rosterAvatar:{width:'18%',height:'86%',flexShrink:0,aspectRatio:1,borderRadius:50,borderWidth:1,borderColor:'#D8AD42',backgroundColor:'#071326'},
+  rosterCopy:{minWidth:0,flex:1,justifyContent:'center',gap:2},
+  rosterName:{color:'#FFFFFF',fontSize:compact?8:11,fontWeight:'800',lineHeight:13},
+  rosterStatus:{color:'#19E987',fontSize:compact?6:9,fontWeight:'800',lineHeight:11},
+  roomCountBadge:{position:'absolute',zIndex:9,left:'53%',top:'19.3%',width:'25%',height:'7.8%',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(6,21,42,0.98)',borderLeftWidth:1,borderRightWidth:1,borderColor:'#D4A83E'},
+  roomCountText:{color:'#FFFFFF',fontSize:compact?11:16,fontWeight:'900',lineHeight:18},
+  roomCountSubtext:{color:'#FFDC55',fontSize:compact?7:10,fontWeight:'900',lineHeight:12},
+  joinDialogOverlay:{...StyleSheet.absoluteFillObject,zIndex:20,alignItems:'center',justifyContent:'center',padding:'8%'},
+  joinDialogBackdrop:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(0,0,0,0.68)'},
+  joinDialog:{width:'100%',maxWidth:420,padding:16,borderWidth:2,borderColor:'#E8BD4E',borderRadius:16,backgroundColor:'#07172D',shadowColor:'#F2BF4A',shadowOpacity:0.28,shadowRadius:16,elevation:14},
+  joinDialogTitle:{color:'#FFDA63',fontSize:compact?15:20,fontWeight:'900',textAlign:'center',marginBottom:8},
+  joinDialogMessage:{color:'#FFFFFF',fontSize:compact?12:14,lineHeight:20,textAlign:'center',marginBottom:12},
+  joinNameInput:{width:'100%',padding:11,borderRadius:9,borderWidth:2,borderColor:'#E8BD4E',backgroundColor:'#FFFFFF',color:'#07162A',fontSize:16,marginBottom:12},
+  joinDialogActions:{flexDirection:'row',justifyContent:'center',gap:8},
+  joinCancelButton:{flex:1,alignItems:'center',justifyContent:'center',paddingVertical:11,borderRadius:9,borderWidth:1,borderColor:'#D8AD42',backgroundColor:'#263C57'},
+  joinSaveButton:{flex:1,alignItems:'center',justifyContent:'center',paddingVertical:11,borderRadius:9,borderWidth:1,borderColor:'#F0CB64',backgroundColor:'#087B37'},
+  joinButtonText:{color:'#FFFFFF',fontSize:compact?10:12,fontWeight:'900'},
   lobbyRoot:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(7,12,28,0.34)',paddingTop:Platform.OS==='web'?18:30,paddingHorizontal:12,paddingBottom:8},
   lobbyTop:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8,marginBottom:10},
   roomHeader:{alignItems:'center',flex:1},
