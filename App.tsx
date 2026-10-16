@@ -132,7 +132,7 @@ export default function App() {
             {characters.map((character, index) => {
               const col = index % 3;
               const row = Math.floor(index / 3);
-              const rowTops = [33.6, 44.0, 55.0, 68.5];
+              const rowTops = [33.6, 46.0, 57.0, 68.5];
               const rowHeights = ['9.0%', '9.0%', '9.0%', '9.0%'];
               const taken = joinedPlayers.some(p => p.character === character);
               const selected = selectedCharacter === character;
