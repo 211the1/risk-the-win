@@ -143,7 +143,7 @@ export default function App() {
                   onPress={() => { setSelectedCharacter(character); setPendingCharacter(character); setPlayerName(''); setJoinDialogOpen(true); }}
                   style={[
                     styles.lobbyPortraitSlot,
-                    { left: `${6.0 + col * 18.1}%`, top: `${33.7 + row * 9.1}%`, width: '16.5%', height: '8.3%' },
+                    { left: `${7.2 + col * 18.1}%`, top: `${34.3 + row * 9.1}%`, width: '13.8%', height: '7.0%' },
                     selected && styles.lobbyPortraitSelected,
                     taken && styles.lobbyPortraitTaken,
                   ]}
@@ -154,11 +154,11 @@ export default function App() {
             })}
             <View pointerEvents="box-none" style={styles.rosterPanel}>
               <Text style={styles.rosterTitle}>PLAYERS ({joinedPlayers.length} / 9)</Text>
-              {characters.map((character, index) => {
-                const player = joinedPlayers.find(item => item.character === character);
+              {Array.from({ length: 9 }, (_, index) => {
+                const player = joinedPlayers[index];
                 const isHostSlot = index === 0;
                 return (
-                  <View key={character} style={[styles.rosterRow, !player && styles.rosterEmptyRow]}>
+                  <View key={'player-slot-' + (index + 1)} style={[styles.rosterRow, !player && styles.rosterEmptyRow]}>
                     <View style={styles.rosterRank}>
                       {isHostSlot ? <Text style={styles.hostCrown}>♛</Text> : <Text style={styles.rosterRankText}>{index + 1}</Text>}
                     </View>
