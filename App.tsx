@@ -64,9 +64,28 @@ export default function App() {
   const settingsSize = Math.max(20, Math.min(width * 0.17, 84)) / 3;
   const settingsPanelWidth = Math.min(width * 0.705, height * 0.615, 465);
 
+  function generateRoomCode() {
+    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) code += alphabet[Math.floor(Math.random() * alphabet.length)];
+    setRoomCode(code);
+    showMessage('Room Created', `Your room code is ${code}. Share it with friends so they can enter the same code.`);
+  }
+
+  function inviteFriends() {
+    const message = `Join my RISK THE WIN game! Room code: ${roomCode}. Open RISK THE WIN and enter this code to join.`;
+    if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(message)
+        .then(() => showMessage('Invite Ready', 'Your invite message has been copied. Send it to your friends!'))
+        .catch(() => showMessage('Invite Friends', message));
+    } else {
+      showMessage('Invite Friends', message);
+    }
+  }
+
   function enterLobby(action: WelcomeAction) {
     setScreen('lobby');
-    if (action === 'Create Game') setRoomCode('WIN-482');
+    if (action === 'Create Game') generateRoomCode();
   }
   function saveAndJoin() {
     const name = playerName.trim();
@@ -173,8 +192,8 @@ export default function App() {
             )}
             <Pressable accessibilityRole="button" accessibilityLabel="Back to welcome screen" onPress={() => setScreen('welcome')} style={[styles.lobbyHotspot, { left: '1%', top: '6%', width: '25%', height: '7%' }]} />
             <Pressable accessibilityRole="button" accessibilityLabel="Start game" onPress={() => showMessage('Start Game', selectedCharacter ? `You selected ${selectedCharacter}. Online multiplayer and game start still need the server connection.` : 'Choose a character first.')} style={[styles.lobbyHotspot, { left: '3%', top: '85%', width: '48%', height: '10%' }]} />
-            <Pressable accessibilityRole="button" accessibilityLabel="Invite friends" onPress={() => showMessage('Invite Friends', 'The lobby artwork is in place. Room creation and invitations need the multiplayer server connection.')} style={[styles.lobbyHotspot, { left: '54%', top: '85%', width: '43%', height: '10%' }]} />
-            <Pressable accessibilityRole="button" accessibilityLabel="Copy room code" onPress={() => showMessage('Room Code', 'Room code entry and sharing will be connected when the multiplayer lobby server is added.')} style={[styles.lobbyHotspot, { left: '45%', top: '19%', width: '11%', height: '7%' }]} />
+            <Pressable accessibilityRole="button" accessibilityLabel="Invite friends" onPress={inviteFriends} style={[styles.lobbyHotspot, { left: '54%', top: '85%', width: '43%', height: '10%' }]} />
+            <Pressable accessibilityRole="button" accessibilityLabel="Copy room code" onPress={generateRoomCode} style={[styles.lobbyHotspot, { left: '45%', top: '19%', width: '11%', height: '7%' }]} />
           </View>
         )}
         {settingsOpen && !howToPlayOpen && screen === 'welcome' && (
