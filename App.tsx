@@ -15,6 +15,17 @@ const howToPlayMenuImage = require('./assets/buttons/how-to-play-menu.png');
 type WelcomeAction = 'Create Game' | 'Join Game';
 type Screen = 'welcome' | 'lobby';
 const characters = ['Boone', 'Ling Ling', 'Meemaw', 'Juby', 'Face', 'Bug', 'Theone', 'Beanz', 'Chicken Joe'];
+const characterPortraits: Record<string, any> = {
+  'Boone': require('./assets/characters/boone.png'),
+  'Ling Ling': require('./assets/characters/ling-ling.png'),
+  'Meemaw': require('./assets/characters/meemaw.png'),
+  'Juby': require('./assets/characters/juby.png'),
+  'Face': require('./assets/characters/face.png'),
+  'Bug': require('./assets/characters/bug.png'),
+  'Theone': require('./assets/characters/theone.png'),
+  'Beanz': require('./assets/characters/beanz.png'),
+  'Chicken Joe': require('./assets/characters/chicken-joe.png'),
+};
 
 function showMessage(title: string, message: string) {
   if (Platform.OS === 'web') { window.alert(`${title}\n\n${message}`); return; }
@@ -108,8 +119,8 @@ export default function App() {
                       const taken = joinedPlayers.some(p => p.character === character);
                       const selected = selectedCharacter === character;
                       return <Pressable key={character} disabled={taken} onPress={() => setSelectedCharacter(character)} style={[styles.characterTile, selected && styles.characterSelected, taken && styles.characterTaken]}>
-                        <View style={[styles.avatar, {backgroundColor:['#74313B','#315E86','#7C6334','#4E7049','#6A4B7E','#87533C','#356D70','#7B425A','#536078'][index]}]}>
-                          <Text style={styles.avatarInitial}>{character.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}</Text>
+                        <View style={styles.avatarFrame}>
+                          <Image source={characterPortraits[character]} style={styles.avatarPortrait} resizeMode="cover" accessibilityLabel={character} />
                         </View>
                         <Text numberOfLines={1} style={styles.characterName}>{character}</Text>
                         <Text style={styles.tileStatus}>{taken ? 'TAKEN' : selected ? 'SELECTED' : 'AVAILABLE'}</Text>
@@ -189,11 +200,11 @@ const styles = StyleSheet.create({
   panelTitle:{color:'#F6D58A',fontSize:14,fontWeight:'900',letterSpacing:1.1},
   panelSub:{color:'#D2C7B2',fontSize:11,marginTop:4,marginBottom:12},
   characterGrid:{flexDirection:'row',flexWrap:'wrap',justifyContent:'center',gap:7},
-  characterTile:{width:'31%',minWidth:78,maxWidth:140,alignItems:'center',paddingVertical:8,paddingHorizontal:4,borderWidth:1,borderColor:'#514658',borderRadius:10,backgroundColor:'#201D2A'},
+  characterTile:{width:'31%',minWidth:78,maxWidth:150,alignItems:'center',paddingVertical:8,paddingHorizontal:4,borderWidth:1,borderColor:'#9C793E',borderRadius:10,backgroundColor:'rgba(32,29,42,0.96')},
   characterSelected:{borderColor:'#F6D58A',backgroundColor:'#443521',borderWidth:2},
   characterTaken:{opacity:0.42},
-  avatar:{width:48,height:48,borderRadius:27,alignItems:'center',justifyContent:'center',borderWidth:2,borderColor:'#D5B36D',marginBottom:5},
-  avatarInitial:{color:'#FFFFFF',fontWeight:'900',fontSize:16},
+  avatarFrame:{width:'100%',maxWidth:100,aspectRatio:1,borderRadius:8,overflow:'hidden',alignItems:'center',justifyContent:'center',borderWidth:2,borderColor:'#D5B36D',marginBottom:6,backgroundColor:'#17131B'},
+  avatarPortrait:{width:'100%',height:'100%'},
   characterName:{color:'#FFF5E2',fontWeight:'800',fontSize:11},
   tileStatus:{color:'#D7B66F',fontSize:8,fontWeight:'900',marginTop:4},
   fieldLabel:{color:'#F6D58A',fontSize:10,fontWeight:'900',marginTop:14,marginBottom:6,letterSpacing:1},
