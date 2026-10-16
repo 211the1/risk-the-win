@@ -133,6 +133,7 @@ export default function App() {
               const col = index % 3;
               const row = Math.floor(index / 3);
               const rowTops = [33.6, 44.0, 55.0, 68.5];
+              const rowHeights = ['9.0%', '9.0%', '9.0%', '9.0%'];
               const taken = joinedPlayers.some(p => p.character === character);
               const selected = selectedCharacter === character;
               return (
@@ -144,7 +145,7 @@ export default function App() {
                   onPress={() => { setSelectedCharacter(character); setPendingCharacter(character); setPlayerName(''); setJoinDialogOpen(true); }}
                   style={[
                     styles.lobbyPortraitSlot,
-                    { left: `${4.5 + col * 19.2}%`, top: `${rowTops[row]}%`, width: '17.2%', height: '9.0%' },
+                    { left: `${4.5 + col * 19.2}%`, top: `${rowTops[row]}%`, width: '17.2%', height: rowHeights[row] },
                     selected && styles.lobbyPortraitSelected,
                     taken && styles.lobbyPortraitTaken,
                   ]}
