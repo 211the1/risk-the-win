@@ -1,16 +1,7 @@
 import React, { useState } from 'react';
 import {
-  Alert,
-  Image,
-  ImageBackground,
-  Platform,
-  Pressable,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-  useWindowDimensions,
+  Alert, Image, ImageBackground, Platform, Pressable, ScrollView,
+  StatusBar, StyleSheet, Text, TextInput, View, useWindowDimensions,
 } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 
@@ -22,17 +13,12 @@ const settingsMenuImage = require('./assets/buttons/settings-menu.png');
 const howToPlayMenuImage = require('./assets/buttons/how-to-play-menu.png');
 
 type WelcomeAction = 'Create Game' | 'Join Game';
+type Screen = 'welcome' | 'lobby';
+const characters = ['Boone', 'Ling Ling', 'Meemaw', 'Juby', 'Face', 'Bug', 'Theone', 'Beanz', 'Chicken Joe'];
 
 function showMessage(title: string, message: string) {
-  if (Platform.OS === 'web') {
-    window.alert(`${title}\n\n${message}`);
-    return;
-  }
+  if (Platform.OS === 'web') { window.alert(`${title}\n\n${message}`); return; }
   Alert.alert(title, message);
-}
-
-function showComingSoon(action: WelcomeAction) {
-  showMessage(action, `${action} will be connected when we build that screen.`);
 }
 
 const howToPlayText =
@@ -48,165 +34,128 @@ const howToPlayText =
 
 export default function App() {
   const { width, height } = useWindowDimensions();
+  const [screen, setScreen] = useState<Screen>('welcome');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
   const [soundEffectsOn, setSoundEffectsOn] = useState(true);
   const [backgroundMusicOn, setBackgroundMusicOn] = useState(true);
+  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
+  const [playerName, setPlayerName] = useState('');
+  const [roomCode, setRoomCode] = useState('WIN-482');
+  const [joinedPlayers, setJoinedPlayers] = useState<{name: string; character: string}[]>([]);
   const compact = width < 500;
   const menuWidth = Math.min(width, height * (2 / 3));
   const buttonWidth = Math.min(menuWidth * 0.84, 440);
   const buttonHeight = Math.max(54, Math.min(buttonWidth * 0.235, 94));
   const settingsSize = Math.max(20, Math.min(width * 0.17, 84)) / 3;
-  // Keep the settings artwork at roughly half its previous size.
   const settingsPanelWidth = Math.min(width * 0.705, height * 0.615, 465);
+
+  function enterLobby(action: WelcomeAction) {
+    setScreen('lobby');
+    if (action === 'Create Game') setRoomCode('WIN-482');
+  }
+  function saveAndJoin() {
+    const name = playerName.trim();
+    if (!name) { showMessage('Player name needed', 'Enter the name you want other players to see.'); return; }
+    if (!selectedCharacter) { showMessage('Choose a character', 'Select one of the nine characters first.'); return; }
+    const alreadyTaken = joinedPlayers.some(p => p.character === selectedCharacter);
+    if (alreadyTaken) { showMessage('Character taken', 'Choose a character that has not been claimed.'); return; }
+    if (joinedPlayers.length >= 8) { showMessage('Room full', 'This room is limited to 8 players.'); return; }
+    setJoinedPlayers(previous => [...previous, { name, character: selectedCharacter }]);
+    setPlayerName('');
+    setSelectedCharacter(null);
+    showMessage('Joined lobby', 'Your player is listed as Ready on this device. Online multiplayer still needs a server connection.');
+  }
 
   return (
     <View style={styles.root}>
       <StatusBar hidden />
       <ExpoStatusBar hidden />
-      <ImageBackground
-        source={backgroundImage}
-        resizeMode="contain"
-        style={styles.background}
-        imageStyle={styles.backgroundImage}
-        accessibilityLabel="RISK THE WIN welcome background"
-      >
-        <View style={[styles.controls, { paddingBottom: Math.max(24, height * 0.045) }]}>
-          <View style={[styles.menu, { width: menuWidth }]}>
-            <View style={styles.mainButtons}>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Create Game"
-                onPress={() => showComingSoon('Create Game')}
-                style={({ pressed }) => [
-                  styles.mainButton,
-                  { width: buttonWidth, height: buttonHeight, opacity: pressed ? 0.82 : 1 },
-                ]}
-              >
-                <Image source={createGameImage} style={styles.buttonArtwork} resizeMode="contain" />
-              </Pressable>
-
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Join Game"
-                onPress={() => showComingSoon('Join Game')}
-                style={({ pressed }) => [
-                  styles.mainButton,
-                  { width: buttonWidth, height: buttonHeight, opacity: pressed ? 0.82 : 1 },
-                ]}
-              >
-                <Image source={joinGameImage} style={styles.buttonArtwork} resizeMode="contain" />
+      <ImageBackground source={backgroundImage} resizeMode="contain" style={styles.background} imageStyle={styles.backgroundImage}>
+        {screen === 'welcome' ? (
+          <View style={[styles.controls, { paddingBottom: Math.max(24, height * 0.045) }]}>
+            <View style={[styles.menu, { width: menuWidth }]}>
+              <View style={styles.mainButtons}>
+                <Pressable accessibilityRole="button" accessibilityLabel="Create Game" onPress={() => enterLobby('Create Game')} style={({pressed}) => [styles.mainButton,{width:buttonWidth,height:buttonHeight,opacity:pressed?0.82:1}]}>
+                  <Image source={createGameImage} style={styles.buttonArtwork} resizeMode="contain" />
+                </Pressable>
+                <Pressable accessibilityRole="button" accessibilityLabel="Join Game" onPress={() => enterLobby('Join Game')} style={({pressed}) => [styles.mainButton,{width:buttonWidth,height:buttonHeight,opacity:pressed?0.82:1}]}>
+                  <Image source={joinGameImage} style={styles.buttonArtwork} resizeMode="contain" />
+                </Pressable>
+              </View>
+              <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => setSettingsOpen(true)} style={({pressed}) => [styles.settingsButton,{width:settingsSize,height:settingsSize,right:compact?22:36,top:compact?24:32,opacity:pressed?0.82:1}]}>
+                <Image source={settingsImage} style={styles.settingsArtwork} resizeMode="contain" />
               </Pressable>
             </View>
-
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Settings"
-              onPress={() => setSettingsOpen(true)}
-              style={({ pressed }) => [
-                styles.settingsButton,
-                {
-                  width: settingsSize,
-                  height: settingsSize,
-                  right: compact ? 22 : 36,
-                  top: compact ? 24 : 32,
-                  opacity: pressed ? 0.82 : 1,
-                },
-              ]}
-            >
-              <Image source={settingsImage} style={styles.settingsArtwork} resizeMode="contain" />
-            </Pressable>
           </View>
-        </View>
-
-        {settingsOpen && !howToPlayOpen && (
+        ) : (
+          <View style={styles.lobbyRoot}>
+            <View style={styles.lobbyTop}>
+              <Pressable onPress={() => setScreen('welcome')} style={styles.smallButton}><Text style={styles.smallButtonText}>‹ BACK</Text></Pressable>
+              <View style={styles.roomHeader}>
+                <Text style={styles.lobbyTitle}>RISK THE WIN</Text>
+                <Text style={styles.roomMeta}>ROOM {roomCode}  •  {joinedPlayers.length}/8 PLAYERS</Text>
+              </View>
+              <Pressable onPress={() => showMessage('Invite Friends', `Share room code ${roomCode} with your friends. Online joining is not connected yet.`)} style={styles.smallButton}><Text style={styles.smallButtonText}>INVITE</Text></Pressable>
+            </View>
+            <ScrollView contentContainerStyle={styles.lobbyScroll} showsVerticalScrollIndicator={false}>
+              <View style={styles.lobbyColumns}>
+                <View style={styles.pickPanel}>
+                  <Text style={styles.panelTitle}>CHOOSE YOUR CHARACTER</Text>
+                  <Text style={styles.panelSub}>Each character can be picked once.</Text>
+                  <View style={styles.characterGrid}>
+                    {characters.map((character, index) => {
+                      const taken = joinedPlayers.some(p => p.character === character);
+                      const selected = selectedCharacter === character;
+                      return <Pressable key={character} disabled={taken} onPress={() => setSelectedCharacter(character)} style={[styles.characterTile, selected && styles.characterSelected, taken && styles.characterTaken]}>
+                        <View style={[styles.avatar, {backgroundColor:['#74313B','#315E86','#7C6334','#4E7049','#6A4B7E','#87533C','#356D70','#7B425A','#536078'][index]}]}>
+                          <Text style={styles.avatarInitial}>{character.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}</Text>
+                        </View>
+                        <Text numberOfLines={1} style={styles.characterName}>{character}</Text>
+                        <Text style={styles.tileStatus}>{taken ? 'TAKEN' : selected ? 'SELECTED' : 'AVAILABLE'}</Text>
+                      </Pressable>;
+                    })}
+                  </View>
+                  <Text style={styles.fieldLabel}>YOUR PLAYER NAME</Text>
+                  <TextInput value={playerName} onChangeText={setPlayerName} placeholder="Enter your name" placeholderTextColor="#B7B1A5" maxLength={18} style={styles.nameInput} returnKeyType="done" />
+                  <Pressable onPress={saveAndJoin} style={({pressed})=>[styles.joinButton,pressed&&{opacity:0.8}]}><Text style={styles.joinButtonText}>SAVE & JOIN</Text></Pressable>
+                </View>
+                <View style={styles.playersPanel}>
+                  <Text style={styles.panelTitle}>PLAYERS IN ROOM</Text>
+                  <Text style={styles.panelSub}>{joinedPlayers.length ? 'Players ready to play' : 'Waiting for players to join'}</Text>
+                  {Array.from({length:8},(_,i)=>{
+                    const player=joinedPlayers[i];
+                    return <View key={i} style={styles.playerRow}>
+                      <View style={styles.playerNumber}><Text style={styles.playerNumberText}>{i+1}</Text></View>
+                      <View style={styles.playerInfo}><Text style={styles.playerName}>{player?.name || 'Waiting for player...'}</Text><Text style={styles.playerCharacter}>{player?.character || 'Open seat'}</Text></View>
+                      <Text style={[styles.readyTag, !player&&styles.waitingTag]}>{player?'READY':'WAITING'}</Text>
+                    </View>;
+                  })}
+                  <Pressable onPress={() => showMessage('Start Game','The lobby screen is connected to local selection. Starting a real multiplayer match will be enabled after the game server is connected.')} style={styles.startButton}><Text style={styles.startButtonText}>START GAME</Text></Pressable>
+                  <Text style={styles.localNote}>LOBBY PREVIEW • SERVER NOT CONNECTED</Text>
+                </View>
+              </View>
+            </ScrollView>
+          </View>
+        )}
+        {settingsOpen && !howToPlayOpen && screen === 'welcome' && (
           <View style={styles.settingsOverlay}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Close settings"
-              onPress={() => setSettingsOpen(false)}
-              style={styles.dismissArea}
-            />
-            <View
-              style={[
-                styles.settingsPanel,
-                {
-                  width: settingsPanelWidth,
-                  height: settingsPanelWidth * (1311 / 1279),
-                },
-              ]}
-            >
-              <Image
-                source={settingsMenuImage}
-                style={styles.settingsMenuArtwork}
-                resizeMode="stretch"
-                accessibilityLabel="Settings menu with sound effects, background music, how to play, and back"
-              />
-              {/* Narrow tap targets so the decorative left/right gems aren't clickable. */}
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={soundEffectsOn ? 'Turn sound effects off' : 'Turn sound effects on'}
-                onPress={() => setSoundEffectsOn((value) => !value)}
-                style={[styles.hotspot, { left: '64%', top: '42%', width: '22%', height: '9%' }]}
-              >
-                <View style={[styles.statusPill, soundEffectsOn ? styles.statusOn : styles.statusOff]}>
-                  <Text style={styles.statusText}>{soundEffectsOn ? 'ON' : 'OFF'}</Text>
-                </View>
-              </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={backgroundMusicOn ? 'Turn background music off' : 'Turn background music on'}
-                onPress={() => setBackgroundMusicOn((value) => !value)}
-                style={[styles.hotspot, { left: '64%', top: '54%', width: '22%', height: '9%' }]}
-              >
-                <View style={[styles.statusPill, backgroundMusicOn ? styles.statusOn : styles.statusOff]}>
-                  <Text style={styles.statusText}>{backgroundMusicOn ? 'ON' : 'OFF'}</Text>
-                </View>
-              </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="How to Play"
-                onPress={() => setHowToPlayOpen(true)}
-                style={[styles.hotspot, { left: '17%', top: '65%', width: '66%', height: '10%' }]}
-              />
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Back to welcome screen"
-                onPress={() => setSettingsOpen(false)}
-                style={[styles.hotspot, { left: '20%', top: '77%', width: '60%', height: '11%' }]}
-              />
+            <Pressable accessibilityRole="button" accessibilityLabel="Close settings" onPress={() => setSettingsOpen(false)} style={styles.dismissArea} />
+            <View style={[styles.settingsPanel,{width:settingsPanelWidth,height:settingsPanelWidth*(1311/1279)}]}>
+              <Image source={settingsMenuImage} style={styles.settingsMenuArtwork} resizeMode="stretch" />
+              <Pressable accessibilityRole="button" accessibilityLabel={soundEffectsOn?'Turn sound effects off':'Turn sound effects on'} onPress={()=>setSoundEffectsOn(v=>!v)} style={[styles.hotspot,{left:'64%',top:'42%',width:'22%',height:'9%'}]}><View style={[styles.statusPill,soundEffectsOn?styles.statusOn:styles.statusOff]}><Text style={styles.statusText}>{soundEffectsOn?'ON':'OFF'}</Text></View></Pressable>
+              <Pressable accessibilityRole="button" accessibilityLabel={backgroundMusicOn?'Turn background music off':'Turn background music on'} onPress={()=>setBackgroundMusicOn(v=>!v)} style={[styles.hotspot,{left:'64%',top:'54%',width:'22%',height:'9%'}]}><View style={[styles.statusPill,backgroundMusicOn?styles.statusOn:styles.statusOff]}><Text style={styles.statusText}>{backgroundMusicOn?'ON':'OFF'}</Text></View></Pressable>
+              <Pressable accessibilityRole="button" accessibilityLabel="How to Play" onPress={()=>setHowToPlayOpen(true)} style={[styles.hotspot,{left:'17%',top:'65%',width:'66%',height:'10%'}]} />
+              <Pressable accessibilityRole="button" accessibilityLabel="Back to welcome screen" onPress={()=>setSettingsOpen(false)} style={[styles.hotspot,{left:'20%',top:'77%',width:'60%',height:'11%'}]} />
             </View>
           </View>
         )}
-        {howToPlayOpen && (
+        {howToPlayOpen && screen === 'welcome' && (
           <View style={styles.howToPlayOverlay}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Close How to Play"
-              onPress={() => setHowToPlayOpen(false)}
-              style={styles.howToPlayBackdrop}
-            />
-            <View
-              style={[
-                styles.howToPlayArtworkPanel,
-                {
-                  width: Math.min(width * 0.94, height * 0.82 * (2 / 3), 600),
-                  height: Math.min(width * 0.94, height * 0.82 * (2 / 3), 600) * 1.5,
-                },
-              ]}
-            >
-              <Image
-                source={howToPlayMenuImage}
-                style={styles.howToPlayArtwork}
-                resizeMode="contain"
-                accessibilityLabel="RISK THE WIN How to Play rules menu"
-              />
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Back to Settings"
-                onPress={() => setHowToPlayOpen(false)}
-                style={[styles.howToPlayBackHotspot, { left: '22%', top: '89%', width: '56%', height: '9%' }]}
-              />
+            <Pressable accessibilityRole="button" accessibilityLabel="Close How to Play" onPress={()=>setHowToPlayOpen(false)} style={styles.howToPlayBackdrop} />
+            <View style={[styles.howToPlayArtworkPanel,{width:Math.min(width*0.94,height*0.82*(2/3),600),height:Math.min(width*0.94,height*0.82*(2/3),600)*1.5}]}>
+              <Image source={howToPlayMenuImage} style={styles.howToPlayArtwork} resizeMode="contain" accessibilityLabel="RISK THE WIN How to Play rules menu" />
+              <Pressable accessibilityRole="button" accessibilityLabel="Back to Settings" onPress={()=>setHowToPlayOpen(false)} style={[styles.howToPlayBackHotspot,{left:'22%',top:'89%',width:'56%',height:'9%'}]} />
             </View>
           </View>
         )}
@@ -216,126 +165,63 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: '#10131B',
-    minHeight: '100%',
-  },
-  background: {
-    flex: 1,
-    width: '100%',
-    minHeight: '100%',
-    justifyContent: 'flex-end',
-  },
-  backgroundImage: {
-    width: '100%',
-    height: '100%',
-  },
-  controls: {
-    flex: 1,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    position: 'relative',
-    gap: 8,
-  },
-  menu: {
-    height: '100%',
-    maxWidth: '100%',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    position: 'relative',
-  },
-  mainButtons: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-  },
-  mainButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonArtwork: {
-    width: '100%',
-    height: '100%',
-  },
-  settingsButton: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  settingsArtwork: {
-    width: '100%',
-    height: '100%',
-  },
-  settingsOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-  },
-  dismissArea: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.22)',
-  },
-  settingsPanel: {
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  settingsMenuArtwork: {
-    width: '100%',
-    height: '100%',
-  },
-  hotspot: {
-    position: 'absolute',
-    backgroundColor: 'transparent',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  statusPill: {
-    minWidth: 38,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#F8D98A',
-  },
-  statusOn: {
-    backgroundColor: '#21864A',
-  },
-  statusOff: {
-    backgroundColor: '#6B2733',
-  },
-  statusText: {
-    color: '#FFFFFF',
-    fontWeight: '800',
-    fontSize: 12,
-    textAlign: 'center',
-  },
-  howToPlayOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 12,
-  },
-  howToPlayBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(5, 8, 25, 0.78)',
-  },
-  howToPlayArtworkPanel: {
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  howToPlayArtwork: {
-    width: '100%',
-    height: '100%',
-  },
-  howToPlayBackHotspot: {
-    position: 'absolute',
-    backgroundColor: 'transparent',
-  },
+  root:{flex:1,backgroundColor:'#10131B',minHeight:'100%'},
+  background:{flex:1,width:'100%',minHeight:'100%',justifyContent:'flex-end'},
+  backgroundImage:{width:'100%',height:'100%'},
+  controls:{flex:1,width:'100%',alignItems:'center',justifyContent:'flex-end',position:'relative',gap:8},
+  menu:{height:'100%',maxWidth:'100%',alignItems:'center',justifyContent:'flex-end',position:'relative'},
+  mainButtons:{alignItems:'center',justifyContent:'center',gap:6},
+  mainButton:{alignItems:'center',justifyContent:'center'},
+  buttonArtwork:{width:'100%',height:'100%'},
+  settingsButton:{position:'absolute',alignItems:'center',justifyContent:'center'},
+  settingsArtwork:{width:'100%',height:'100%'},
+  lobbyRoot:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(12,15,25,0.92)',paddingTop:Platform.OS==='web'?18:30,paddingHorizontal:12,paddingBottom:8},
+  lobbyTop:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8,marginBottom:10},
+  roomHeader:{alignItems:'center',flex:1},
+  lobbyTitle:{color:'#F6D58A',fontSize:compact?18:26,fontWeight:'900',letterSpacing:2},
+  roomMeta:{color:'#F5EAD1',fontSize:11,fontWeight:'800',marginTop:4,letterSpacing:1},
+  smallButton:{borderColor:'#C8A45B',borderWidth:1,borderRadius:9,paddingHorizontal:10,paddingVertical:9,backgroundColor:'#292131'},
+  smallButtonText:{color:'#F8D98A',fontSize:11,fontWeight:'900'},
+  lobbyScroll:{paddingBottom:18},
+  lobbyColumns:{flexDirection:width<720?'column':'row',alignItems:'stretch',gap:12,maxWidth:1100,width:'100%',alignSelf:'center'},
+  pickPanel:{flex:1.05,backgroundColor:'rgba(28,27,38,0.94)',borderColor:'#9C793E',borderWidth:1,borderRadius:16,padding:12},
+  playersPanel:{flex:0.95,backgroundColor:'rgba(28,27,38,0.94)',borderColor:'#9C793E',borderWidth:1,borderRadius:16,padding:12},
+  panelTitle:{color:'#F6D58A',fontSize:14,fontWeight:'900',letterSpacing:1.1},
+  panelSub:{color:'#D2C7B2',fontSize:11,marginTop:4,marginBottom:12},
+  characterGrid:{flexDirection:'row',flexWrap:'wrap',justifyContent:'center',gap:7},
+  characterTile:{width:'31%',minWidth:78,maxWidth:140,alignItems:'center',paddingVertical:8,paddingHorizontal:4,borderWidth:1,borderColor:'#514658',borderRadius:10,backgroundColor:'#201D2A'},
+  characterSelected:{borderColor:'#F6D58A',backgroundColor:'#443521',borderWidth:2},
+  characterTaken:{opacity:0.42},
+  avatar:{width:compact?42:54,height:compact?42:54,borderRadius:27,alignItems:'center',justifyContent:'center',borderWidth:2,borderColor:'#D5B36D',marginBottom:5},
+  avatarInitial:{color:'#FFFFFF',fontWeight:'900',fontSize:16},
+  characterName:{color:'#FFF5E2',fontWeight:'800',fontSize:11},
+  tileStatus:{color:'#D7B66F',fontSize:8,fontWeight:'900',marginTop:4},
+  fieldLabel:{color:'#F6D58A',fontSize:10,fontWeight:'900',marginTop:14,marginBottom:6,letterSpacing:1},
+  nameInput:{borderWidth:1,borderColor:'#78664D',borderRadius:9,color:'#FFFFFF',paddingHorizontal:12,paddingVertical:10,backgroundColor:'#15141D',fontSize:14},
+  joinButton:{backgroundColor:'#236D45',borderWidth:1,borderColor:'#7BD39B',borderRadius:10,alignItems:'center',padding:13,marginTop:9},
+  joinButtonText:{color:'#FFFFFF',fontSize:13,fontWeight:'900',letterSpacing:1.2},
+  playerRow:{flexDirection:'row',alignItems:'center',paddingVertical:8,borderBottomWidth:1,borderBottomColor:'#443B45',gap:8,minHeight:52},
+  playerNumber:{width:28,height:28,borderRadius:14,backgroundColor:'#4B3B2C',alignItems:'center',justifyContent:'center',borderWidth:1,borderColor:'#A8874C'},
+  playerNumberText:{color:'#F6D58A',fontWeight:'900',fontSize:11},
+  playerInfo:{flex:1},
+  playerName:{color:'#FFF5E2',fontWeight:'800',fontSize:12},
+  playerCharacter:{color:'#C4B8A3',fontSize:10,marginTop:2},
+  readyTag:{color:'#8EE0A8',fontWeight:'900',fontSize:9},
+  waitingTag:{color:'#A9A3AD'},
+  startButton:{backgroundColor:'#8A642C',borderColor:'#E7C778',borderWidth:1,borderRadius:10,alignItems:'center',padding:13,marginTop:14},
+  startButtonText:{color:'#FFFFFF',fontWeight:'900',letterSpacing:1.5},
+  localNote:{color:'#B8A77F',fontSize:8,textAlign:'center',marginTop:9,letterSpacing:1},
+  settingsOverlay:{...StyleSheet.absoluteFillObject,zIndex:10,alignItems:'center',justifyContent:'center',padding:8},
+  dismissArea:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(0,0,0,0.22)'},
+  settingsPanel:{position:'relative',alignItems:'center',justifyContent:'center'},
+  settingsMenuArtwork:{width:'100%',height:'100%'},
+  hotspot:{position:'absolute',backgroundColor:'transparent',alignItems:'center',justifyContent:'center'},
+  statusPill:{minWidth:38,paddingHorizontal:8,paddingVertical:4,borderRadius:12,borderWidth:1,borderColor:'#F8D98A'},
+  statusOn:{backgroundColor:'#21864A'},statusOff:{backgroundColor:'#6B2733'},
+  statusText:{color:'#FFFFFF',fontWeight:'800',fontSize:12,textAlign:'center'},
+  howToPlayOverlay:{...StyleSheet.absoluteFillObject,zIndex:20,alignItems:'center',justifyContent:'center',padding:12},
+  howToPlayBackdrop:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(5,8,25,0.78)'},
+  howToPlayArtworkPanel:{position:'relative',alignItems:'center',justifyContent:'center'},
+  howToPlayArtwork:{width:'100%',height:'100%'},
+  howToPlayBackHotspot:{position:'absolute',backgroundColor:'transparent'},
 });
