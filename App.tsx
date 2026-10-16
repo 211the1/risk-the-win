@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   panelTitle:{color:'#F6D58A',fontSize:14,fontWeight:'900',letterSpacing:1.1},
   panelSub:{color:'#D2C7B2',fontSize:11,marginTop:4,marginBottom:12},
   characterGrid:{flexDirection:'row',flexWrap:'wrap',justifyContent:'center',gap:7},
-  characterTile:{width:'31%',minWidth:78,maxWidth:150,alignItems:'center',paddingVertical:8,paddingHorizontal:4,borderWidth:1,borderColor:'#9C793E',borderRadius:10,backgroundColor:'rgba(32,29,42,0.96')},
+  characterTile:{width:'31%',minWidth:78,maxWidth:150,alignItems:'center',paddingVertical:8,paddingHorizontal:4,borderWidth:1,borderColor:'#9C793E',borderRadius:10,backgroundColor:'rgba(32,29,42,0.96)'},
   characterSelected:{borderColor:'#F6D58A',backgroundColor:'#443521',borderWidth:2},
   characterTaken:{opacity:0.42},
   avatarFrame:{width:'100%',maxWidth:100,aspectRatio:1,borderRadius:8,overflow:'hidden',alignItems:'center',justifyContent:'center',borderWidth:2,borderColor:'#D5B36D',marginBottom:6,backgroundColor:'#17131B'},
