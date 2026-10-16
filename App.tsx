@@ -15,7 +15,7 @@ const howToPlayMenuImage = require('./assets/buttons/how-to-play-menu.png');
 
 type WelcomeAction = 'Create Game' | 'Join Game';
 type Screen = 'welcome' | 'lobby';
-const characters = ['Boone', 'Ling Ling', 'Meemaw', 'Juby', 'Face', 'Bug', 'Theone', 'Beanz', 'Chicken Joe'];
+const characters = ['Boone', 'Ling Ling', 'Meemaw', 'Juby', 'Face', 'Bug', 'Theone', 'Beanz', 'Chicken Joe', 'Bob', 'Jayme', 'Trevor'];
 const characterPortraits: Record<string, any> = {
   'Boone': require('./assets/characters/boone.png'),
   'Ling Ling': require('./assets/characters/ling-ling.png'),
@@ -26,6 +26,9 @@ const characterPortraits: Record<string, any> = {
   'Theone': require('./assets/characters/theone.png'),
   'Beanz': require('./assets/characters/beanz.png'),
   'Chicken Joe': require('./assets/characters/chicken-joe.png'),
+  'Bob': require('./assets/characters/bob.png'),
+  'Jayme': require('./assets/characters/jayme.png'),
+  'Trevor': require('./assets/characters/trevor.png'),
 };
 
 function showMessage(title: string, message: string) {
@@ -94,7 +97,7 @@ export default function App() {
     if (!characterToJoin) { showMessage('Choose a character', 'Tap one of the nine character portraits first.'); return; }
     const alreadyTaken = joinedPlayers.some(p => p.character === characterToJoin);
     if (alreadyTaken) { showMessage('Character taken', 'Choose a character that has not been claimed.'); return; }
-    if (joinedPlayers.length >= 9) { showMessage('Room full', 'This room is limited to 9 players.'); return; }
+    if (joinedPlayers.length >= 12) { showMessage('Room full', 'This room is limited to 12 players.'); return; }
     setJoinedPlayers(previous => [...previous, { name, character: characterToJoin }]);
     setPlayerName('');
     setSelectedCharacter(null);
@@ -140,7 +143,7 @@ export default function App() {
                   onPress={() => { setSelectedCharacter(character); setPendingCharacter(character); setPlayerName(''); setJoinDialogOpen(true); }}
                   style={[
                     styles.lobbyPortraitSlot,
-                    { left: `${6.0 + col * 18.1}%`, top: `${33.7 + row * 12.1}%`, width: '16.5%', height: '10.8%' },
+                    { left: `${6.0 + col * 18.1}%`, top: `${33.7 + row * 9.1}%`, width: '16.5%', height: '8.3%' },
                     selected && styles.lobbyPortraitSelected,
                     taken && styles.lobbyPortraitTaken,
                   ]}
@@ -150,7 +153,7 @@ export default function App() {
               );
             })}
             <View pointerEvents="box-none" style={styles.rosterPanel}>
-              <Text style={styles.rosterTitle}>PLAYERS ({joinedPlayers.length} / 9)</Text>
+              <Text style={styles.rosterTitle}>PLAYERS ({joinedPlayers.length} / 12)</Text>
               {characters.map((character, index) => {
                 const player = joinedPlayers.find(item => item.character === character);
                 const isHostSlot = index === 0;
@@ -173,7 +176,7 @@ export default function App() {
               })}
             </View>
             <View pointerEvents="none" style={styles.roomCountBadge}>
-              <Text style={styles.roomCountText}>{joinedPlayers.length} / 9</Text>
+              <Text style={styles.roomCountText}>{joinedPlayers.length} / 12</Text>
               <Text style={styles.roomCountSubtext}>PLAYERS</Text>
             </View>
             {joinDialogOpen && (
