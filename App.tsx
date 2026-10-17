@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert, Image, ImageBackground, PanResponder, Platform, Pressable, ScrollView,
   StatusBar, StyleSheet, Text, TextInput, View, useWindowDimensions,
@@ -68,23 +68,40 @@ const howToPlayText =
   '• If a Challenge response is your last card, Final Showdown starts. The selected opponent gets a multiple-choice question with a 20-second timer.\n' +
   '• The first player to get rid of all their cards wins, unless Final Showdown rules decide the result.';
 
-function MovableItem({ children, editMode, style, label }: { children: React.ReactNode; editMode: boolean; style?: any; label: string }) {
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [scale, setScale] = useState(1);
+function MovableItem({ children, editMode, style, label, layoutId }: { children: React.ReactNode; editMode: boolean; style?: any; label: string; layoutId: string }) {
+  const [savedLayout, setSavedLayout] = useState(() => {
+    try {
+      if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        const saved = window.localStorage.getItem('risk-the-win-layout-' + layoutId);
+        if (saved) return JSON.parse(saved);
+      }
+    } catch {}
+    return { offset: { x: 0, y: 0 }, scale: 1 };
+  });
+  const [offset, setOffset] = useState(savedLayout.offset);
+  const [scale, setScale] = useState(savedLayout.scale);
+  const saveLayout = (nextOffset: {x:number;y:number}, nextScale: number) => {
+    setSavedLayout({ offset: nextOffset, scale: nextScale });
+    try {
+      if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        window.localStorage.setItem('risk-the-win-layout-' + layoutId, JSON.stringify({ offset: nextOffset, scale: nextScale }));
+      }
+    } catch {}
+  };
   const start = useRef({ x: 0, y: 0 });
   const offsetRef = useRef({ x: 0, y: 0 });
   const pan = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => editMode,
     onMoveShouldSetPanResponder: () => editMode,
     onPanResponderGrant: () => { start.current = offsetRef.current; },
-    onPanResponderMove: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); },
-    onPanResponderRelease: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); },
+    onPanResponderMove: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scale); },
+    onPanResponderRelease: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scale); },
   })).current;
   return <View {...pan.panHandlers} accessibilityLabel={label} style={[style, { transform: [{ translateX: offset.x }, { translateY: offset.y }, { scale }] }]}>
     {children}
     {editMode && <View style={styles.layoutItemControls}>
-      <Pressable onPress={() => setScale(s => Math.min(2, Number((s + 0.1).toFixed(2))))} style={styles.layoutItemButton}><Text style={styles.layoutItemButtonText}>+</Text></Pressable>
-      <Pressable onPress={() => setScale(s => Math.max(0.5, Number((s - 0.1).toFixed(2))))} style={styles.layoutItemButton}><Text style={styles.layoutItemButtonText}>−</Text></Pressable>
+      <Pressable onPress={() => setScale(s => { const n = Math.min(2, Number((s + 0.1).toFixed(2))); saveLayout(offset, n); return n; })} style={styles.layoutItemButton}><Text style={styles.layoutItemButtonText}>+</Text></Pressable>
+      <Pressable onPress={() => setScale(s => { const n = Math.max(0.5, Number((s - 0.1).toFixed(2))); saveLayout(offset, n); return n; })} style={styles.layoutItemButton}><Text style={styles.layoutItemButtonText}>−</Text></Pressable>
     </View>}
   </View>;
 }
@@ -96,7 +113,14 @@ export default function App() {
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
   const [soundEffectsOn, setSoundEffectsOn] = useState(true);
   const [backgroundMusicOn, setBackgroundMusicOn] = useState(true);
-  const [layoutEditMode, setLayoutEditMode] = useState(true);
+  const [layoutEditMode, setLayoutEditMode] = useState(false);
+  const [gameLogoVisible, setGameLogoVisible] = useState(true);
+  useEffect(() => {
+    if (screen !== 'main-game') { setGameLogoVisible(true); return; }
+    setGameLogoVisible(true);
+    const logoTimer = setTimeout(() => setGameLogoVisible(false), 30000);
+    return () => clearTimeout(logoTimer);
+  }, [screen]);
   const [topCharacter] = useState(() => characterPortraits[characters[Math.floor(Math.random() * characters.length)]]);
   const [handCards, setHandCards] = useState(handCardImages);
   const [selectedHandCard, setSelectedHandCard] = useState<number | null>(null);
@@ -289,7 +313,7 @@ export default function App() {
           </View>
         ) : (
           <View style={styles.gamePreviewRoot}>
-            <MovableItem editMode={layoutEditMode} label="Move and resize top controls" style={styles.gameTopBar}>
+            <MovableItem editMode={layoutEditMode} label="Move and resize top controls" layoutId="top-controls" style={styles.gameTopBar}>
               <Pressable accessibilityRole="button" accessibilityLabel="Back to lobby" onPress={() => setScreen('lobby')} style={styles.gameBackButton}>
                 <Text style={styles.gameBackText}>‹ LOBBY</Text>
               </Pressable>
@@ -298,13 +322,13 @@ export default function App() {
                 <Pressable accessibilityRole="button" accessibilityLabel="Player character dropdown" onPress={() => showMessage('Players', 'The player dropdown artwork is in place. Player selection will be connected later.')} style={styles.playerDropdownTapTarget} />
               </View>
             </MovableItem>
-            <MovableItem editMode={layoutEditMode} label="Move and resize decks" style={styles.gameDeckArea}>
+            <MovableItem editMode={layoutEditMode} label="Move and resize decks" layoutId="decks" style={styles.gameDeckArea}>
               <Pressable accessibilityRole="button" accessibilityLabel="Play selected card to discard pile" onPress={() => { if (selectedHandCard === null) { showMessage('Choose a card', 'Tap a card in your hand first, then tap the discard pile to play it.'); return; } const played = handCards[selectedHandCard]; setTopDiscardCard(played); setHandCards(cards => cards.filter((_, index) => index !== selectedHandCard)); setSelectedHandCard(null); }} style={styles.gameDeckTouch}>
                 <Image source={drawDiscardDecksImage} style={styles.gameDecksArtwork} resizeMode="contain" />
                 <Image source={topDiscardCard} style={styles.discardTopCard} resizeMode="contain" />
               </Pressable>
             </MovableItem>
-            <MovableItem editMode={layoutEditMode} label="Move and resize bottom buttons" style={styles.gameBottomButtons}>
+            <MovableItem editMode={layoutEditMode} label="Move and resize bottom buttons" layoutId="bottom-buttons" style={styles.gameBottomButtons}>
               <Pressable accessibilityRole="button" accessibilityLabel="Wake Up" onPress={() => showMessage('Wake Up', 'The button artwork is connected. Its in-game action will be added later.')} style={styles.gameActionButton}><Image source={wakeUpButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
               <Pressable accessibilityRole="button" accessibilityLabel="Emoji" onPress={() => showMessage('Emoji', 'The button artwork is connected. Emoji actions will be added later.')} style={styles.gameActionButton}><Image source={emojiButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
               <Pressable accessibilityRole="button" accessibilityLabel="Straighten cards" onPress={() => showMessage('Straighten Cards', 'The button artwork is connected. Card sorting will be added later.')} style={styles.gameActionButton}><Image source={sortButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
@@ -327,10 +351,10 @@ export default function App() {
                 <Pressable accessibilityRole="button" accessibilityLabel="Make cards smaller" onPress={() => setHandScale(scale => Math.max(0.6, Number((scale - 0.1).toFixed(2))))} style={styles.handZoomButton}><Text style={styles.handZoomText}>−</Text></Pressable>
               </View>
             </View>
-            <MovableItem editMode={layoutEditMode} label="Move and resize game logo" style={styles.gameLogoPosition}>
+            {gameLogoVisible && <MovableItem editMode={layoutEditMode} label="Move and resize game logo" layoutId="logo" style={styles.gameLogoPosition}>
               <Image source={riskLogoImage} resizeMode="contain" style={styles.gameLogoArtwork} />
-            </MovableItem>
-            <MovableItem editMode={layoutEditMode} label="Move and resize random character portrait" style={styles.topCharacterPosition}>
+            </MovableItem>}
+            <MovableItem editMode={layoutEditMode} label="Move and resize random character portrait" layoutId="character-portrait" style={styles.topCharacterPosition}>
               <View style={styles.goldCharacterRing}>
                 <Image source={topCharacter} resizeMode="cover" style={styles.topCharacterPortrait} />
               </View>
