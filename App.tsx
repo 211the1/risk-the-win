@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
   roomCountSubtext:{color:'#FFDC55',fontSize:8,fontWeight:'900',lineHeight:12},
   joinDialogOverlay:{...StyleSheet.absoluteFillObject,zIndex:20,alignItems:'center',justifyContent:'center',padding:'8%'},
   joinDialogBackdrop:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(0,0,0,0.68)'},
-  joinDialog:{width:'96%',maxWidth:650,aspectRatio:1.5,alignSelf:'center',justifyContent:'center'},
+  joinDialog:{width:'92%',maxWidth:620,aspectRatio:1.5,alignSelf:'center',justifyContent:'center'},
   joinPanelArtwork:{...StyleSheet.absoluteFillObject,width:'100%',height:'100%'},
   joinNameInput:{position:'absolute',left:'10%',top:'53%',width:'80%',height:'15%',paddingHorizontal:14,paddingVertical:4,borderRadius:12,borderWidth:0,backgroundColor:'transparent',color:'#17243B',fontSize:18},
   joinCancelButton:{position:'absolute',left:'12%',top:'72%',width:'35%',height:'17%',backgroundColor:'transparent'},
