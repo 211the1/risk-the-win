@@ -79,6 +79,7 @@ export default function App() {
   const [topDiscardCard, setTopDiscardCard] = useState(discardTopCardImage);
   const [handOffset, setHandOffset] = useState({ x: 0, y: 0 });
   const [handScale, setHandScale] = useState(1);
+  const handTransformStart = useRef({ x: 0, y: 0 });
   const handOffsetRef = useRef({ x: 0, y: 0 });
   const handDragStart = useRef({ x: 0, y: 0 });
   const handPanResponder = useRef(PanResponder.create({
@@ -286,13 +287,13 @@ export default function App() {
               <Pressable accessibilityRole="button" accessibilityLabel="Draw card" onPress={() => { const next = handCardImages[(handCards.length + 3) % handCardImages.length]; setHandCards(cards => [...cards, next]); }} style={styles.gameActionButton}><Image source={drawButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
               <Pressable accessibilityRole="button" accessibilityLabel="Push to talk" onPress={() => showMessage('Push-to-Talk', 'The button artwork is connected. Voice communication will be implemented later.')} style={styles.gameActionButton}><Image source={talkButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
             </View>
-            <View style={[styles.playerHandFan, { transform: [{ translateX: handOffset.x }, { translateY: handOffset.y }, { scale: handScale }] }]} accessibilityLabel={`Your hand of ${handCards.length} cards in a U-shaped fan.`}>
+            <View {...handPanResponder.panHandlers} style={[styles.playerHandFan, { transform: [{ translateX: handOffset.x }, { translateY: handOffset.y }, { scale: handScale }] }]} accessibilityLabel={`Your hand of ${handCards.length} cards in a U-shaped fan. Drag to move it; use plus and minus to zoom.`}>
               {handCards.map((cardImage, index) => {
                 const center = (handCards.length - 1) / 2;
                 const distance = index - center;
                 const normalized = center ? Math.abs(distance) / center : 0;
                 const angle = distance * 7;
-                const curveLift = normalized * normalized * -34;
+                const curveLift = normalized * normalized * 34;
                 return <Pressable key={`hand-card-${index}`} accessibilityRole="button" accessibilityLabel={`Select card ${index + 1}`} onPress={() => setSelectedHandCard(index)} style={[styles.playerHandCardTouch, { left: handCards.length > 1 ? `${(index / (handCards.length - 1)) * 78}%` : '39%', zIndex: selectedHandCard === index ? 20 : index + 1, transform: [{ translateY: -curveLift + (selectedHandCard === index ? -18 : 0) }, { rotate: `${angle}deg` }] }]}>
                   <Image source={cardImage} resizeMode="contain" style={styles.playerHandCard} />
                 </Pressable>;
