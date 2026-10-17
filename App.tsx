@@ -18,18 +18,18 @@ type WelcomeAction = 'Create Game' | 'Join Game';
 type Screen = 'welcome' | 'lobby';
 const characters = ['Boone', 'Ling Ling', 'Meemaw', 'Juby', 'Face', 'Bug', 'Theone', 'Beanz', 'Chicken Joe', 'Bob', 'Jayme', 'Trevor'];
 const characterPortraits: Record<string, any> = {
-  'Boone': require('./assets/characters/boone.png'),
-  'Ling Ling': require('./assets/characters/ling-ling.png'),
-  'Meemaw': require('./assets/characters/meemaw.png'),
-  'Juby': require('./assets/characters/juby.png'),
-  'Face': require('./assets/characters/face.png'),
-  'Bug': require('./assets/characters/bug.png'),
-  'Theone': require('./assets/characters/theone.png'),
-  'Beanz': require('./assets/characters/beanz.png'),
-  'Chicken Joe': require('./assets/characters/chicken-joe.png'),
-  'Bob': require('./assets/characters/bob.png'),
-  'Jayme': require('./assets/characters/jayme.png'),
-  'Trevor': require('./assets/characters/trevor.png'),
+  'Boone': require('./assets/shared/characters/boone.png'),
+  'Ling Ling': require('./assets/shared/characters/ling-ling.png'),
+  'Meemaw': require('./assets/shared/characters/meemaw.png'),
+  'Juby': require('./assets/shared/characters/juby.png'),
+  'Face': require('./assets/shared/characters/face.png'),
+  'Bug': require('./assets/shared/characters/bug.png'),
+  'Theone': require('./assets/shared/characters/theone.png'),
+  'Beanz': require('./assets/shared/characters/beanz.png'),
+  'Chicken Joe': require('./assets/shared/characters/chicken-joe.png'),
+  'Bob': require('./assets/shared/characters/bob.png'),
+  'Jayme': require('./assets/shared/characters/jayme.png'),
+  'Trevor': require('./assets/shared/characters/trevor.png'),
 };
 
 function showMessage(title: string, message: string) {

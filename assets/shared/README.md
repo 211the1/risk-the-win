@@ -1,0 +1,1 @@
+Shared assets are limited to artwork genuinely reused across screens. Character portraits are shared by the Lobby and Main Game.

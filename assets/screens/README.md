@@ -1,23 +1,24 @@
-# RISK THE WIN — Screen Artwork Map
+# Screen-by-screen asset map
 
-This is the source of truth for screen-specific artwork. Keep each screen's background and buttons in that screen's folder. Do not move files without updating every code reference in the same change.
+The `assets/` folder has only two top-level folders: `screens/` and `shared/`.
 
-## Screen folders
-- `welcome/backgrounds/`: welcome screen background.
-- `welcome/buttons/`: Create Game, Join Game, Settings, Settings menu, and How to Play artwork.
-- `lobby/backgrounds/`: shared host/waiting lobby background.
-- `lobby/buttons/`: lobby button artwork.
-- `lobby/ui/`: lobby panels and other non-button interface artwork.
-- `main-game/backgrounds/`: gameplay table background.
-- `main-game/buttons/`: gameplay controls, including wake-up, emoji, draw, sort/straighten, and push-to-talk artwork.
-- `winner/backgrounds/` and `winner/buttons/`: final/winner screen artwork.
+## Screen-specific assets
 
-Host and guests use the same lobby screen with role-specific controls.
+- `screens/welcome/`: welcome background, Create Game and Join Game buttons, settings artwork, menus, logo, and welcome-screen audio.
+- `screens/lobby/`: lobby background, lobby buttons, player UI panels, and lobby audio.
+- `screens/main-game/`: game-screen backgrounds, controls, UI, all card artwork, and main-game audio.
+- `screens/winner/`: winner-screen backgrounds, buttons, UI, and winner-screen audio.
 
-## Shared assets (not duplicated per screen)
-- `assets/characters/`: shared character portraits; use these on both lobby and gameplay screens.
-- `assets/cards/`: card artwork grouped by card type.
-- `assets/logo/`: game logo.
-- `assets/audio/`: sound and music assets.
+Each screen owns its own `backgrounds/`, `buttons/`, `ui/`, and `audio/` folders as needed. Put card artwork in `screens/main-game/cards/`.
 
-Use lowercase, hyphenated filenames and the correct extension. Existing card and character art is preserved. Missing artwork is not fabricated or renamed during folder cleanup.
+## Shared assets
+
+- `shared/characters/`: character portraits used by both the Lobby and Main Game.
+
+## Rules
+
+1. Add new files to the screen that owns them, except character portraits shared by Lobby and Main Game.
+2. Keep filenames lowercase and hyphenated, with the correct extension.
+3. Whenever an asset moves or is renamed, update every code reference in the same change.
+4. Do not add new files to old top-level categories such as `assets/audio/`, `assets/backgrounds/`, `assets/buttons/`, `assets/cards/`, `assets/characters/`, `assets/logo/`, or `assets/ui/`.
+5. The current app code references welcome, lobby, and shared character assets. Main Game and Winner screen UI/logic still need to be built.

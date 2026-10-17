@@ -1,0 +1,1 @@
+All card-face artwork belongs here, grouped into subfolders by card type. Preserve existing card filenames.
