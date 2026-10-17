@@ -249,8 +249,6 @@ export default function App() {
               <View style={styles.gameDeckTouch}>
                 <Image source={drawDiscardDecksImage} style={styles.gameDecksArtwork} resizeMode="contain" />
               </View>
-              <Text style={styles.gameDeckLabels}>DRAW DECK                         DISCARD PILE</Text>
-              <Text style={styles.gameDeckCount}>Cards remaining: —</Text>
             </View>
             <View style={styles.gameBottomButtons}>
               <Pressable accessibilityRole="button" accessibilityLabel="Wake Up" onPress={() => showMessage('Wake Up', 'The button artwork is connected. Its in-game action will be added later.')} style={styles.gameActionButton}><Image source={wakeUpButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
@@ -306,7 +304,7 @@ const styles = StyleSheet.create({
   gameBackText:{color:'#FFE5A0',fontSize:12,fontWeight:'900'},
   playersDropdownArtwork:{width:'44%',height:64},
   gameDeckArea:{width:'100%',flex:1,alignItems:'center',justifyContent:'center',paddingVertical:4},
-  gameDeckTouch:{width:'100%',maxWidth:520,height:'52%',alignItems:'center',justifyContent:'center'},
+  gameDeckTouch:{width:'100%',maxWidth:390,height:'38%',alignItems:'center',justifyContent:'center'},
   gameDecksArtwork:{width:'100%',height:'100%'},
   gameDeckLabels:{color:'#FFF0C3',fontWeight:'900',fontSize:10,textAlign:'center',letterSpacing:1,marginTop:2,textShadowColor:'#000',textShadowRadius:4},
   gameDeckCount:{color:'#FFFFFF',fontWeight:'800',fontSize:9,marginTop:3,textShadowColor:'#000',textShadowRadius:4},
