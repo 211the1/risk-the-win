@@ -21,14 +21,6 @@ const drawButtonImage = require('./assets/screens/main-game/buttons/draw-button.
 const talkButtonImage = require('./assets/screens/main-game/buttons/talk-button.png');
 const playersDropdownImage = require('./assets/screens/main-game/buttons/players-dropdown.png');
 const riskLogoImage = require('./assets/screens/welcome/logo/risk-the-win-logo.png');
-const characterPortraits = [
-  require('./assets/shared/characters/boone.png'), require('./assets/shared/characters/ling-ling.png'),
-  require('./assets/shared/characters/meemaw.png'), require('./assets/shared/characters/juby.png'),
-  require('./assets/shared/characters/bug.png'), require('./assets/shared/characters/face.png'),
-  require('./assets/shared/characters/beanz.png'), require('./assets/shared/characters/chicken-joe.png'),
-  require('./assets/shared/characters/theone.png'), require('./assets/shared/characters/jayme.png'),
-  require('./assets/shared/characters/bob.png'), require('./assets/shared/characters/trevor.png')
-];
 const drawDiscardDecksImage = require('./assets/screens/main-game/cards/draw-discard-decks.png');
 const discardTopCardImage = require('./assets/screens/main-game/cards/characters/boone-blue.png');
 const handCardImages = [
@@ -105,7 +97,7 @@ export default function App() {
   const [soundEffectsOn, setSoundEffectsOn] = useState(true);
   const [backgroundMusicOn, setBackgroundMusicOn] = useState(true);
   const [layoutEditMode, setLayoutEditMode] = useState(true);
-  const [topCharacter] = useState(() => characterPortraits[Math.floor(Math.random() * characterPortraits.length)]);
+  const [topCharacter] = useState(() => characterPortraits[characters[Math.floor(Math.random() * characters.length)]]);
   const [handCards, setHandCards] = useState(handCardImages);
   const [selectedHandCard, setSelectedHandCard] = useState<number | null>(null);
   const [topDiscardCard, setTopDiscardCard] = useState(discardTopCardImage);
