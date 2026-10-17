@@ -188,7 +188,6 @@ export default function App() {
                 <Pressable accessibilityRole="button" accessibilityLabel="Cancel joining" onPress={() => { setJoinDialogOpen(false); setPendingCharacter(null); setSelectedCharacter(null); }} style={styles.joinDialogBackdrop} />
                 <View style={styles.joinDialog}>
                   <Image source={playerNamePanelImage} style={styles.joinPanelArtwork} resizeMode="contain" />
-                  <Text style={styles.joinDialogMessage}>Playing as {pendingCharacter}</Text>
                   <TextInput
                     accessibilityLabel="Enter your player name"
                     value={playerName}
@@ -288,7 +287,6 @@ const styles = StyleSheet.create({
   joinDialogBackdrop:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(0,0,0,0.68)'},
   joinDialog:{width:'96%',maxWidth:650,aspectRatio:1.5,alignSelf:'center',justifyContent:'center'},
   joinPanelArtwork:{...StyleSheet.absoluteFillObject,width:'100%',height:'100%'},
-  joinDialogMessage:{position:'absolute',top:'43%',left:'12%',width:'76%',color:'#FFFFFF',fontSize:13,fontWeight:'700',textAlign:'center'},
   joinNameInput:{position:'absolute',left:'10%',top:'53%',width:'80%',height:'15%',paddingHorizontal:14,paddingVertical:4,borderRadius:12,borderWidth:0,backgroundColor:'transparent',color:'#17243B',fontSize:18},
   joinCancelButton:{position:'absolute',left:'12%',top:'72%',width:'35%',height:'17%',backgroundColor:'transparent'},
   joinSaveButton:{position:'absolute',left:'53%',top:'72%',width:'35%',height:'17%',backgroundColor:'transparent'},
