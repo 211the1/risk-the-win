@@ -78,6 +78,7 @@ export default function App() {
   const [selectedHandCard, setSelectedHandCard] = useState<number | null>(null);
   const [topDiscardCard, setTopDiscardCard] = useState(discardTopCardImage);
   const [handOffset, setHandOffset] = useState({ x: 0, y: 0 });
+  const [handScale, setHandScale] = useState(1);
   const handOffsetRef = useRef({ x: 0, y: 0 });
   const handDragStart = useRef({ x: 0, y: 0 });
   const handPanResponder = useRef(PanResponder.create({
@@ -285,12 +286,21 @@ export default function App() {
               <Pressable accessibilityRole="button" accessibilityLabel="Draw card" onPress={() => { const next = handCardImages[(handCards.length + 3) % handCardImages.length]; setHandCards(cards => [...cards, next]); }} style={styles.gameActionButton}><Image source={drawButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
               <Pressable accessibilityRole="button" accessibilityLabel="Push to talk" onPress={() => showMessage('Push-to-Talk', 'The button artwork is connected. Voice communication will be implemented later.')} style={styles.gameActionButton}><Image source={talkButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
             </View>
-            <View {...handPanResponder.panHandlers} style={[styles.playerHandFan, { transform: [{ translateX: handOffset.x }, { translateY: handOffset.y }] }]} accessibilityLabel={`Your hand of ${handCards.length} cards. Drag the fan to move it.`}>
-              {handCards.map((cardImage, index) => (
-                <Pressable key={`hand-card-${index}`} accessibilityRole="button" accessibilityLabel={`Select card ${index + 1}`} onPress={() => setSelectedHandCard(index)} style={[styles.playerHandCardTouch, { left: `${index * 8}%`, zIndex: selectedHandCard === index ? 20 : index + 1, transform: [{ translateY: selectedHandCard === index ? -18 : 0 }, { rotate: `${(index - (handCards.length - 1) / 2) * 5}deg` }] }]}>
+            <View style={[styles.playerHandFan, { transform: [{ translateX: handOffset.x }, { translateY: handOffset.y }, { scale: handScale }] }]} accessibilityLabel={`Your hand of ${handCards.length} cards in a U-shaped fan.`}>
+              {handCards.map((cardImage, index) => {
+                const center = (handCards.length - 1) / 2;
+                const distance = index - center;
+                const normalized = center ? Math.abs(distance) / center : 0;
+                const angle = distance * 7;
+                const curveLift = normalized * normalized * 34;
+                return <Pressable key={`hand-card-${index}`} accessibilityRole="button" accessibilityLabel={`Select card ${index + 1}`} onPress={() => setSelectedHandCard(index)} style={[styles.playerHandCardTouch, { left: handCards.length > 1 ? `${(index / (handCards.length - 1)) * 78}%` : '39%', zIndex: selectedHandCard === index ? 20 : index + 1, transform: [{ translateY: -curveLift + (selectedHandCard === index ? -18 : 0) }, { rotate: `${angle}deg` }] }]}>
                   <Image source={cardImage} resizeMode="contain" style={styles.playerHandCard} />
-                </Pressable>
-              ))}
+                </Pressable>;
+              })}
+              <View style={styles.handZoomControls}>
+                <Pressable accessibilityRole="button" accessibilityLabel="Make cards bigger" onPress={() => setHandScale(scale => Math.min(1.8, Number((scale + 0.1).toFixed(2))))} style={styles.handZoomButton}><Text style={styles.handZoomText}>+</Text></Pressable>
+                <Pressable accessibilityRole="button" accessibilityLabel="Make cards smaller" onPress={() => setHandScale(scale => Math.max(0.6, Number((scale - 0.1).toFixed(2))))} style={styles.handZoomButton}><Text style={styles.handZoomText}>−</Text></Pressable>
+              </View>
             </View>
             <Text style={styles.gamePreviewNote}>SCREEN PREVIEW · MULTIPLAYER NOT CONNECTED</Text>
           </View>
@@ -350,9 +360,12 @@ const styles = StyleSheet.create({
   gameBottomButtons:{width:'100%',maxWidth:760,flexDirection:'row',alignItems:'center',justifyContent:'space-evenly',gap:4,minHeight:76,maxHeight:112},
   gameActionButton:{flex:1,height:'100%',minWidth:0,alignItems:'center',justifyContent:'center'},
   gameActionArtwork:{width:'100%',height:'100%'},
-  playerHandFan:{position:'absolute',right:'2%',bottom:'2%',width:'34%',height:'12%',zIndex:10,touchAction:'none'},
-  playerHandCardTouch:{position:'absolute',bottom:0,width:'27%',height:'100%'},
+  playerHandFan:{position:'absolute',left:'17%',bottom:'7%',width:'66%',height:'23%',zIndex:10},
+  playerHandCardTouch:{position:'absolute',bottom:0,width:'22%',height:'88%'},
   playerHandCard:{width:'100%',height:'100%',borderRadius:5},
+  handZoomControls:{position:'absolute',right:0,bottom:0,flexDirection:'row',gap:5,zIndex:30},
+  handZoomButton:{width:26,height:26,borderRadius:13,backgroundColor:'#10205D',borderWidth:2,borderColor:'#F4CF58',alignItems:'center',justifyContent:'center'},
+  handZoomText:{color:'#FFFFFF',fontSize:19,fontWeight:'900',lineHeight:22},
   gamePreviewNote:{color:'#F8DFA2',fontSize:8,fontWeight:'800',textAlign:'center',marginTop:4,letterSpacing:1,textShadowColor:'#000',textShadowRadius:3},
   lobbyHotspot:{position:'absolute',backgroundColor:'transparent'},
   lobbyPortraitSlot:{position:'absolute',alignItems:'center',justifyContent:'center',overflow:'hidden',borderRadius:10,padding:0,backgroundColor:'transparent'},
