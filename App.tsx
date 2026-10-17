@@ -22,6 +22,16 @@ const talkButtonImage = require('./assets/screens/main-game/buttons/talk-button.
 const playersDropdownImage = require('./assets/screens/main-game/buttons/players-dropdown.png');
 const drawDiscardDecksImage = require('./assets/screens/main-game/cards/draw-discard-decks.png');
 const discardTopCardImage = require('./assets/screens/main-game/cards/characters/boone-blue.png');
+const handCardImages = [
+  require('./assets/screens/main-game/cards/characters/boone-blue.png'),
+  require('./assets/screens/main-game/cards/characters/ling-ling-red.png'),
+  require('./assets/screens/main-game/cards/characters/meemaw-green.png'),
+  require('./assets/screens/main-game/cards/characters/juby-yellow.png'),
+  require('./assets/screens/main-game/cards/characters/bug-blue.png'),
+  require('./assets/screens/main-game/cards/characters/face-red.png'),
+  require('./assets/screens/main-game/cards/characters/beanz-green.png'),
+  require('./assets/screens/main-game/cards/characters/chicken-joe-yellow.png'),
+];
 
 type WelcomeAction = 'Create Game' | 'Join Game';
 type Screen = 'welcome' | 'lobby' | 'main-game';
@@ -262,6 +272,11 @@ export default function App() {
               <Pressable accessibilityRole="button" accessibilityLabel="Draw card" onPress={() => showMessage('Draw Card', 'The button artwork is connected. Drawing cards will be implemented with the game logic later.')} style={styles.gameActionButton}><Image source={drawButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
               <Pressable accessibilityRole="button" accessibilityLabel="Push to talk" onPress={() => showMessage('Push-to-Talk', 'The button artwork is connected. Voice communication will be implemented later.')} style={styles.gameActionButton}><Image source={talkButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
             </View>
+            <View style={styles.playerHandFan} accessibilityLabel="Your hand of eight cards">
+              {handCardImages.map((cardImage, index) => (
+                <Image key={`hand-card-${index}`} source={cardImage} resizeMode="contain" style={[styles.playerHandCard, { left: `${index * 8}%`, transform: [{ rotate: `${(index - 3.5) * 5}deg` }] }]} />
+              ))}
+            </View>
             <Text style={styles.gamePreviewNote}>SCREEN PREVIEW · MULTIPLAYER NOT CONNECTED</Text>
           </View>
         )}
@@ -320,6 +335,8 @@ const styles = StyleSheet.create({
   gameBottomButtons:{width:'100%',maxWidth:760,flexDirection:'row',alignItems:'center',justifyContent:'space-evenly',gap:4,minHeight:76,maxHeight:112},
   gameActionButton:{flex:1,height:'100%',minWidth:0,alignItems:'center',justifyContent:'center'},
   gameActionArtwork:{width:'100%',height:'100%'},
+  playerHandFan:{position:'absolute',right:'2%',bottom:'3%',width:'42%',height:'17%',zIndex:4},
+  playerHandCard:{position:'absolute',bottom:0,width:'27%',height:'100%',borderRadius:5},
   gamePreviewNote:{color:'#F8DFA2',fontSize:8,fontWeight:'800',textAlign:'center',marginTop:4,letterSpacing:1,textShadowColor:'#000',textShadowRadius:3},
   lobbyHotspot:{position:'absolute',backgroundColor:'transparent'},
   lobbyPortraitSlot:{position:'absolute',alignItems:'center',justifyContent:'center',overflow:'hidden',borderRadius:10,padding:0,backgroundColor:'transparent'},
