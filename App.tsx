@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   gamePlayerControls:{position:'absolute',right:0,top:92,width:'30%',height:54},
   
   playerDropdownTapTarget:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
-  discardTopCard:{position:'absolute',left:'53%',top:'4%',width:'29%',height:'47%'},
+  discardTopCard:{position:'absolute',left:'55%',top:'7%',width:'23%',height:'37%'},
   gameBackButton:{paddingHorizontal:12,paddingVertical:8,borderRadius:10,borderWidth:1,borderColor:'#D5B56D',backgroundColor:'rgba(8,20,40,0.85)'},
   gameBackText:{color:'#FFE5A0',fontSize:12,fontWeight:'900'},
   playersDropdownArtwork:{width:'44%',height:64},
