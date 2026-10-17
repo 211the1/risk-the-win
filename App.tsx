@@ -75,13 +75,14 @@ export default function App() {
   const [soundEffectsOn, setSoundEffectsOn] = useState(true);
   const [backgroundMusicOn, setBackgroundMusicOn] = useState(true);
   const [handOffset, setHandOffset] = useState({ x: 0, y: 0 });
+  const handOffsetRef = useRef({ x: 0, y: 0 });
   const handDragStart = useRef({ x: 0, y: 0 });
   const handPanResponder = useRef(PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: () => true,
-    onPanResponderGrant: () => { handDragStart.current = handOffset; },
-    onPanResponderMove: (_, gesture) => setHandOffset({ x: handDragStart.current.x + gesture.dx, y: handDragStart.current.y + gesture.dy }),
-    onPanResponderRelease: (_, gesture) => setHandOffset({ x: handDragStart.current.x + gesture.dx, y: handDragStart.current.y + gesture.dy }),
+    onPanResponderGrant: () => { handDragStart.current = handOffsetRef.current; },
+    onPanResponderMove: (_, gesture) => { const next = { x: handDragStart.current.x + gesture.dx, y: handDragStart.current.y + gesture.dy }; handOffsetRef.current = next; setHandOffset(next); },
+    onPanResponderRelease: (_, gesture) => { const next = { x: handDragStart.current.x + gesture.dx, y: handDragStart.current.y + gesture.dy }; handOffsetRef.current = next; setHandOffset(next); },
   })).current;
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
   const [pendingCharacter, setPendingCharacter] = useState<string | null>(null);
