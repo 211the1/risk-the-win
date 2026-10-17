@@ -20,6 +20,15 @@ const sortButtonImage = require('./assets/screens/main-game/buttons/sort-button.
 const drawButtonImage = require('./assets/screens/main-game/buttons/draw-button.png');
 const talkButtonImage = require('./assets/screens/main-game/buttons/talk-button.png');
 const playersDropdownImage = require('./assets/screens/main-game/buttons/players-dropdown.png');
+const riskLogoImage = require('./assets/screens/welcome/logo/risk-the-win-logo.png');
+const characterPortraits = [
+  require('./assets/shared/characters/boone.png'), require('./assets/shared/characters/ling-ling.png'),
+  require('./assets/shared/characters/meemaw.png'), require('./assets/shared/characters/juby.png'),
+  require('./assets/shared/characters/bug.png'), require('./assets/shared/characters/face.png'),
+  require('./assets/shared/characters/beanz.png'), require('./assets/shared/characters/chicken-joe.png'),
+  require('./assets/shared/characters/theone.png'), require('./assets/shared/characters/jayme.png'),
+  require('./assets/shared/characters/bob.png'), require('./assets/shared/characters/trevor.png'),
+];
 const drawDiscardDecksImage = require('./assets/screens/main-game/cards/draw-discard-decks.png');
 const discardTopCardImage = require('./assets/screens/main-game/cards/characters/boone-blue.png');
 const handCardImages = [
@@ -67,6 +76,27 @@ const howToPlayText =
   '• If a Challenge response is your last card, Final Showdown starts. The selected opponent gets a multiple-choice question with a 20-second timer.\n' +
   '• The first player to get rid of all their cards wins, unless Final Showdown rules decide the result.';
 
+function MovableItem({ children, editMode, style, label }: { children: React.ReactNode; editMode: boolean; style?: any; label: string }) {
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [scale, setScale] = useState(1);
+  const start = useRef({ x: 0, y: 0 });
+  const offsetRef = useRef({ x: 0, y: 0 });
+  const pan = useRef(PanResponder.create({
+    onStartShouldSetPanResponder: () => editMode,
+    onMoveShouldSetPanResponder: () => editMode,
+    onPanResponderGrant: () => { start.current = offsetRef.current; },
+    onPanResponderMove: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); },
+    onPanResponderRelease: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); },
+  })).current;
+  return <View {...pan.panHandlers} accessibilityLabel={label} style={[style, { transform: [{ translateX: offset.x }, { translateY: offset.y }, { scale }] }]}>
+    {children}
+    {editMode && <View style={styles.layoutItemControls}>
+      <Pressable onPress={() => setScale(s => Math.min(2, Number((s + 0.1).toFixed(2))))} style={styles.layoutItemButton}><Text style={styles.layoutItemButtonText}>+</Text></Pressable>
+      <Pressable onPress={() => setScale(s => Math.max(0.5, Number((s - 0.1).toFixed(2))))} style={styles.layoutItemButton}><Text style={styles.layoutItemButtonText}>−</Text></Pressable>
+    </View>}
+  </View>;
+}
+
 export default function App() {
   const { width, height } = useWindowDimensions();
   const [screen, setScreen] = useState<Screen>('welcome');
@@ -74,6 +104,8 @@ export default function App() {
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
   const [soundEffectsOn, setSoundEffectsOn] = useState(true);
   const [backgroundMusicOn, setBackgroundMusicOn] = useState(true);
+  const [layoutEditMode, setLayoutEditMode] = useState(true);
+  const [topCharacter] = useState(() => characterPortraits[Math.floor(Math.random() * characterPortraits.length)]);
   const [handCards, setHandCards] = useState(handCardImages);
   const [selectedHandCard, setSelectedHandCard] = useState<number | null>(null);
   const [topDiscardCard, setTopDiscardCard] = useState(discardTopCardImage);
@@ -265,7 +297,7 @@ export default function App() {
           </View>
         ) : (
           <View style={styles.gamePreviewRoot}>
-            <View style={styles.gameTopBar}>
+            <MovableItem editMode={layoutEditMode} label="Move and resize top controls" style={styles.gameTopBar}>
               <Pressable accessibilityRole="button" accessibilityLabel="Back to lobby" onPress={() => setScreen('lobby')} style={styles.gameBackButton}>
                 <Text style={styles.gameBackText}>‹ LOBBY</Text>
               </Pressable>
@@ -273,20 +305,20 @@ export default function App() {
                 <Image source={playersDropdownImage} style={styles.playersDropdownArtwork} resizeMode="contain" />
                 <Pressable accessibilityRole="button" accessibilityLabel="Player character dropdown" onPress={() => showMessage('Players', 'The player dropdown artwork is in place. Player selection will be connected later.')} style={styles.playerDropdownTapTarget} />
               </View>
-            </View>
-            <View style={styles.gameDeckArea}>
+            </MovableItem>
+            <MovableItem editMode={layoutEditMode} label="Move and resize decks" style={styles.gameDeckArea}>
               <Pressable accessibilityRole="button" accessibilityLabel="Play selected card to discard pile" onPress={() => { if (selectedHandCard === null) { showMessage('Choose a card', 'Tap a card in your hand first, then tap the discard pile to play it.'); return; } const played = handCards[selectedHandCard]; setTopDiscardCard(played); setHandCards(cards => cards.filter((_, index) => index !== selectedHandCard)); setSelectedHandCard(null); }} style={styles.gameDeckTouch}>
                 <Image source={drawDiscardDecksImage} style={styles.gameDecksArtwork} resizeMode="contain" />
                 <Image source={topDiscardCard} style={styles.discardTopCard} resizeMode="contain" />
               </Pressable>
-            </View>
-            <View style={styles.gameBottomButtons}>
+            </MovableItem>
+            <MovableItem editMode={layoutEditMode} label="Move and resize bottom buttons" style={styles.gameBottomButtons}>
               <Pressable accessibilityRole="button" accessibilityLabel="Wake Up" onPress={() => showMessage('Wake Up', 'The button artwork is connected. Its in-game action will be added later.')} style={styles.gameActionButton}><Image source={wakeUpButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
               <Pressable accessibilityRole="button" accessibilityLabel="Emoji" onPress={() => showMessage('Emoji', 'The button artwork is connected. Emoji actions will be added later.')} style={styles.gameActionButton}><Image source={emojiButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
               <Pressable accessibilityRole="button" accessibilityLabel="Straighten cards" onPress={() => showMessage('Straighten Cards', 'The button artwork is connected. Card sorting will be added later.')} style={styles.gameActionButton}><Image source={sortButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
               <Pressable accessibilityRole="button" accessibilityLabel="Draw card" onPress={() => { const next = handCardImages[(handCards.length + 3) % handCardImages.length]; setHandCards(cards => [...cards, next]); }} style={styles.gameActionButton}><Image source={drawButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
               <Pressable accessibilityRole="button" accessibilityLabel="Push to talk" onPress={() => showMessage('Push-to-Talk', 'The button artwork is connected. Voice communication will be implemented later.')} style={styles.gameActionButton}><Image source={talkButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
-            </View>
+            </MovableItem>
             <View {...handPanResponder.panHandlers} style={[styles.playerHandFan, { transform: [{ translateX: handOffset.x }, { translateY: handOffset.y }, { scale: handScale }] }]} accessibilityLabel={`Your hand of ${handCards.length} cards in a U-shaped fan. Drag to move it; use plus and minus to zoom.`}>
               {handCards.map((cardImage, index) => {
                 const center = (handCards.length - 1) / 2;
@@ -303,6 +335,17 @@ export default function App() {
                 <Pressable accessibilityRole="button" accessibilityLabel="Make cards smaller" onPress={() => setHandScale(scale => Math.max(0.6, Number((scale - 0.1).toFixed(2))))} style={styles.handZoomButton}><Text style={styles.handZoomText}>−</Text></Pressable>
               </View>
             </View>
+            <MovableItem editMode={layoutEditMode} label="Move and resize game logo" style={styles.gameLogoPosition}>
+              <Image source={riskLogoImage} resizeMode="contain" style={styles.gameLogoArtwork} />
+            </MovableItem>
+            <MovableItem editMode={layoutEditMode} label="Move and resize random character portrait" style={styles.topCharacterPosition}>
+              <View style={styles.goldCharacterRing}>
+                <Image source={topCharacter} resizeMode="cover" style={styles.topCharacterPortrait} />
+              </View>
+            </MovableItem>
+            <Pressable accessibilityRole="button" accessibilityLabel={layoutEditMode ? "Lock screen layout" : "Edit screen layout"} onPress={() => setLayoutEditMode(value => !value)} style={styles.layoutModeButton}>
+              <Text style={styles.layoutModeButtonText}>{layoutEditMode ? "LOCK LAYOUT" : "EDIT LAYOUT"}</Text>
+            </Pressable>
             <Text style={styles.gamePreviewNote}>SCREEN PREVIEW · MULTIPLAYER NOT CONNECTED</Text>
           </View>
         )}
@@ -345,6 +388,16 @@ const styles = StyleSheet.create({
   settingsArtwork:{width:'100%',height:'100%'},
   lobbyArtworkRoot:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
   gamePreviewRoot:{...StyleSheet.absoluteFillObject,alignItems:'center',justifyContent:'space-between',paddingTop:Platform.OS==='web'?16:28,paddingBottom:12,paddingHorizontal:10,backgroundColor:'rgba(4,10,25,0.10)'},
+  gameLogoPosition:{position:'absolute',left:'2%',top:'2%',width:'25%',height:'10%',zIndex:15},
+  gameLogoArtwork:{width:'100%',height:'100%'},
+  topCharacterPosition:{position:'absolute',left:'39%',top:'1%',width:74,height:90,zIndex:16,alignItems:'center',justifyContent:'center'},
+  goldCharacterRing:{width:'100%',height:'100%',borderRadius:48,borderWidth:4,borderColor:'#F4CE59',backgroundColor:'#10234F',padding:4,alignItems:'center',justifyContent:'center',overflow:'hidden',shadowColor:'#000',shadowOpacity:0.6,shadowRadius:5,elevation:7},
+  topCharacterPortrait:{width:'100%',height:'100%',borderRadius:40},
+  layoutModeButton:{position:'absolute',right:8,top:8,zIndex:50,paddingHorizontal:10,paddingVertical:7,borderRadius:8,borderWidth:2,borderColor:'#F4CE59',backgroundColor:'#10234F'},
+  layoutModeButtonText:{color:'#FFF2B5',fontSize:10,fontWeight:'900'},
+  layoutItemControls:{position:'absolute',right:0,top:0,zIndex:60,flexDirection:'row',gap:3},
+  layoutItemButton:{width:25,height:25,alignItems:'center',justifyContent:'center',borderRadius:13,borderWidth:1,borderColor:'#F4CE59',backgroundColor:'#10234F'},
+  layoutItemButtonText:{color:'#FFFFFF',fontSize:18,fontWeight:'900'},
   gameTopBar:{width:'100%',flexDirection:'row',alignItems:'flex-start',justifyContent:'space-between',minHeight:'12%'},
   gamePlayerControls:{position:'absolute',right:0,top:38,width:'30%',height:64},
   
