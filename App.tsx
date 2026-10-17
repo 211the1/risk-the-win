@@ -21,6 +21,7 @@ const drawButtonImage = require('./assets/screens/main-game/buttons/draw-button.
 const talkButtonImage = require('./assets/screens/main-game/buttons/talk-button.png');
 const playersDropdownImage = require('./assets/screens/main-game/buttons/players-dropdown.png');
 const drawDiscardDecksImage = require('./assets/screens/main-game/cards/draw-discard-decks.png');
+const discardTopCardImage = require('./assets/screens/main-game/cards/characters/boone-blue.png');
 
 type WelcomeAction = 'Create Game' | 'Join Game';
 type Screen = 'welcome' | 'lobby' | 'main-game';
@@ -243,11 +244,15 @@ export default function App() {
               <Pressable accessibilityRole="button" accessibilityLabel="Back to lobby" onPress={() => setScreen('lobby')} style={styles.gameBackButton}>
                 <Text style={styles.gameBackText}>‹ LOBBY</Text>
               </Pressable>
-              <Image source={playersDropdownImage} style={styles.playersDropdownArtwork} resizeMode="contain" />
+              <View style={styles.gamePlayerControls}>
+                <Image source={playersDropdownImage} style={styles.playersDropdownArtwork} resizeMode="contain" />
+                <Pressable accessibilityRole="button" accessibilityLabel="Player character dropdown" onPress={() => showMessage('Players', 'The player dropdown artwork is in place. Player selection will be connected later.')} style={styles.playerDropdownTapTarget} />
+              </View>
             </View>
             <View style={styles.gameDeckArea}>
               <View style={styles.gameDeckTouch}>
                 <Image source={drawDiscardDecksImage} style={styles.gameDecksArtwork} resizeMode="contain" />
+                <Image source={discardTopCardImage} style={styles.discardTopCard} resizeMode="stretch" />
               </View>
             </View>
             <View style={styles.gameBottomButtons}>
@@ -299,7 +304,10 @@ const styles = StyleSheet.create({
   settingsArtwork:{width:'100%',height:'100%'},
   lobbyArtworkRoot:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
   gamePreviewRoot:{...StyleSheet.absoluteFillObject,alignItems:'center',justifyContent:'space-between',paddingTop:Platform.OS==='web'?16:28,paddingBottom:12,paddingHorizontal:10,backgroundColor:'rgba(4,10,25,0.10)'},
-  gameTopBar:{width:'100%',flexDirection:'row',alignItems:'flex-start',justifyContent:'space-between',minHeight:'12%'},
+  gameTopBar:{width:'100%',flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-end',minHeight:'12%'},
+  gamePlayerControls:{position:'absolute',right:0,top:58,width:'44%',height:64},
+  playerDropdownTapTarget:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
+  discardTopCard:{position:'absolute',left:'55%',top:'9%',width:'23%',height:'39%'},
   gameBackButton:{paddingHorizontal:12,paddingVertical:8,borderRadius:10,borderWidth:1,borderColor:'#D5B56D',backgroundColor:'rgba(8,20,40,0.85)'},
   gameBackText:{color:'#FFE5A0',fontSize:12,fontWeight:'900'},
   playersDropdownArtwork:{width:'44%',height:64},
