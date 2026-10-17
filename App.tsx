@@ -89,13 +89,17 @@ function MovableItem({ children, editMode, style, label, layoutId }: { children:
     } catch {}
   };
   const start = useRef({ x: 0, y: 0 });
-  const offsetRef = useRef({ x: 0, y: 0 });
+  const offsetRef = useRef(offset);
+  const editModeRef = useRef(editMode);
+  const scaleRef = useRef(scale);
+  editModeRef.current = editMode;
+  scaleRef.current = scale;
   const pan = useRef(PanResponder.create({
-    onStartShouldSetPanResponder: () => editMode,
-    onMoveShouldSetPanResponder: () => editMode,
+    onStartShouldSetPanResponder: () => editModeRef.current,
+    onMoveShouldSetPanResponder: () => editModeRef.current,
     onPanResponderGrant: () => { start.current = offsetRef.current; },
-    onPanResponderMove: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scale); },
-    onPanResponderRelease: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scale); },
+    onPanResponderMove: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scaleRef.current); },
+    onPanResponderRelease: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scaleRef.current); },
   })).current;
   return <View {...pan.panHandlers} accessibilityLabel={label} style={[style, { transform: [{ translateX: offset.x }, { translateY: offset.y }, { scale }] }]}>
     {children}
