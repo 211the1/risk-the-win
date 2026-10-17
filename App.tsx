@@ -5,14 +5,14 @@ import {
 } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 
-const backgroundImage = require('./assets/backgrounds/welcome-background.png');
-const lobbyBackgroundImage = require('./assets/backgrounds/lobby-character-selection.png');
-const createGameImage = require('./assets/buttons/create-game.png');
-const joinGameImage = require('./assets/buttons/join-game.png');
-const settingsImage = require('./assets/buttons/settings-button.png');
-const settingsMenuImage = require('./assets/buttons/settings-menu.png');
-const howToPlayMenuImage = require('./assets/buttons/how-to-play-menu.png');
-const playerNamePanelImage = require('./assets/ui/player-name-panel.png');
+const backgroundImage = require('./assets/screens/welcome/backgrounds/welcome-background.png');
+const lobbyBackgroundImage = require('./assets/screens/lobby/backgrounds/lobby-character-selection.png');
+const createGameImage = require('./assets/screens/welcome/buttons/create-game.png');
+const joinGameImage = require('./assets/screens/welcome/buttons/join-game.png');
+const settingsImage = require('./assets/screens/welcome/buttons/settings-button.png');
+const settingsMenuImage = require('./assets/screens/welcome/buttons/settings-menu.png');
+const howToPlayMenuImage = require('./assets/screens/welcome/buttons/how-to-play-menu.png');
+const playerNamePanelImage = require('./assets/screens/lobby/ui/player-name-panel.png');
 
 type WelcomeAction = 'Create Game' | 'Join Game';
 type Screen = 'welcome' | 'lobby';

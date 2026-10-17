@@ -1,24 +1,23 @@
 # RISK THE WIN — Screen Artwork Map
 
-The game has exactly four screens. Put new screen-specific artwork in the matching screen folder below. Do not put screen-specific artwork in another screen's folder.
+This is the source of truth for screen-specific artwork. Keep each screen's background and buttons in that screen's folder. Do not move files without updating every code reference in the same change.
 
-## Four screens
+## Screen folders
+- `welcome/backgrounds/`: welcome screen background.
+- `welcome/buttons/`: Create Game, Join Game, Settings, Settings menu, and How to Play artwork.
+- `lobby/backgrounds/`: shared host/waiting lobby background.
+- `lobby/buttons/`: lobby button artwork.
+- `lobby/ui/`: lobby panels and other non-button interface artwork.
+- `main-game/backgrounds/`: gameplay table background.
+- `main-game/buttons/`: gameplay controls, including wake-up, emoji, draw, sort/straighten, and push-to-talk artwork.
+- `winter/backgrounds/` and `winter/buttons/`: final/winter screen artwork.
 
-1. `welcome/` — welcome background and Create Game / Join Game / Settings artwork.
-2. `lobby/` — shared host/waiting lobby background and lobby buttons. Host and guests use the same lobby screen with role-specific controls.
-3. `main-game/` — card-playing table background, gameplay controls, and the walkie-talkie button artwork (visual only until voice is implemented).
-4. `winter/` — final/winter screen artwork. This is the last screen in the game flow.
+Host and guests use the same lobby screen with role-specific controls.
 
-Each screen folder has `backgrounds/` and `buttons/` subfolders. Put full-screen art in `backgrounds/`; put individual button art in `buttons/`. Use lowercase, hyphenated filenames with clear names and the correct extension.
+## Shared assets (not duplicated per screen)
+- `assets/characters/`: shared character portraits; use these on both lobby and gameplay screens.
+- `assets/cards/`: card artwork grouped by card type.
+- `assets/logo/`: game logo.
+- `assets/audio/`: sound and music assets.
 
-## Important existing files
-
-Existing artwork is being preserved in its current paths for now; do not delete or rename it while adding new art:
-
-- Welcome background: `assets/backgrounds/welcome-background.png`
-- Lobby background/art: `assets/backgrounds/lobby-character-selection.png`
-- Welcome buttons: `assets/buttons/create-game.png`, `assets/buttons/join-game.png`, `assets/buttons/settings-button.png`
-- Other existing menu art: `assets/buttons/how-to-play-menu.png`, `assets/buttons/settings-menu.png`
-- Main-game artwork folders: `assets/backgrounds/main-game/`, `assets/buttons/main-game/`
-
-This map is the source of truth for where new artwork belongs. Existing files should only be moved later as a deliberate, verified cleanup so the app's image paths do not break.
+Use lowercase, hyphenated filenames and the correct extension. Existing card and character art is preserved. Missing artwork is not fabricated or renamed during folder cleanup.
