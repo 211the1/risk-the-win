@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   lobbyArtworkRoot:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
   gamePreviewRoot:{...StyleSheet.absoluteFillObject,alignItems:'center',justifyContent:'space-between',paddingTop:Platform.OS==='web'?16:28,paddingBottom:12,paddingHorizontal:10,backgroundColor:'rgba(4,10,25,0.10)'},
   gameTopBar:{width:'100%',flexDirection:'row',alignItems:'flex-start',justifyContent:'space-between',minHeight:'12%'},
-  gamePlayerControls:{position:'absolute',right:0,top:52,width:'30%',height:64},
+  gamePlayerControls:{position:'absolute',right:0,top:38,width:'30%',height:64},
   
   playerDropdownTapTarget:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
   discardTopCard:{position:'absolute',left:'48%',top:'0%',width:'35.19%',height:'70.38%'},
