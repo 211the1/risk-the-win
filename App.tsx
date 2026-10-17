@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
   gameBackText:{color:'#FFE5A0',fontSize:12,fontWeight:'900'},
   playersDropdownArtwork:{width:'44%',height:64},
   gameDeckArea:{width:'100%',flex:1,alignItems:'center',justifyContent:'center',paddingVertical:4},
-  gameDeckTouch:{width:'100%',maxWidth:720,height:'78%',alignItems:'center',justifyContent:'center'},
+  gameDeckTouch:{width:'100%',maxWidth:520,height:'52%',alignItems:'center',justifyContent:'center'},
   gameDecksArtwork:{width:'100%',height:'100%'},
   gameDeckLabels:{color:'#FFF0C3',fontWeight:'900',fontSize:10,textAlign:'center',letterSpacing:1,marginTop:2,textShadowColor:'#000',textShadowRadius:4},
   gameDeckCount:{color:'#FFFFFF',fontWeight:'800',fontSize:9,marginTop:3,textShadowColor:'#000',textShadowRadius:4},
