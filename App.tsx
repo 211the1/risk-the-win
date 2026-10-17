@@ -292,7 +292,7 @@ export default function App() {
                 const distance = index - center;
                 const normalized = center ? Math.abs(distance) / center : 0;
                 const angle = distance * 7;
-                const curveLift = normalized * normalized * 34;
+                const curveLift = normalized * normalized * -34;
                 return <Pressable key={`hand-card-${index}`} accessibilityRole="button" accessibilityLabel={`Select card ${index + 1}`} onPress={() => setSelectedHandCard(index)} style={[styles.playerHandCardTouch, { left: handCards.length > 1 ? `${(index / (handCards.length - 1)) * 78}%` : '39%', zIndex: selectedHandCard === index ? 20 : index + 1, transform: [{ translateY: -curveLift + (selectedHandCard === index ? -18 : 0) }, { rotate: `${angle}deg` }] }]}>
                   <Image source={cardImage} resizeMode="contain" style={styles.playerHandCard} />
                 </Pressable>;
