@@ -27,7 +27,7 @@ const characterPortraits = [
   require('./assets/shared/characters/bug.png'), require('./assets/shared/characters/face.png'),
   require('./assets/shared/characters/beanz.png'), require('./assets/shared/characters/chicken-joe.png'),
   require('./assets/shared/characters/theone.png'), require('./assets/shared/characters/jayme.png'),
-  require('./assets/shared/characters/bob.png'), require('./assets/shared/characters/trevor.png'),
+  require('./assets/shared/characters/bob.png'), require('./assets/shared/characters/trevor.png')
 ];
 const drawDiscardDecksImage = require('./assets/screens/main-game/cards/draw-discard-decks.png');
 const discardTopCardImage = require('./assets/screens/main-game/cards/characters/boone-blue.png');
