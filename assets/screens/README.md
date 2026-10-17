@@ -10,7 +10,7 @@ This is the source of truth for screen-specific artwork. Keep each screen's back
 - `lobby/ui/`: lobby panels and other non-button interface artwork.
 - `main-game/backgrounds/`: gameplay table background.
 - `main-game/buttons/`: gameplay controls, including wake-up, emoji, draw, sort/straighten, and push-to-talk artwork.
-- `winter/backgrounds/` and `winter/buttons/`: final/winter screen artwork.
+- `winner/backgrounds/` and `winner/buttons/`: final/winner screen artwork.
 
 Host and guests use the same lobby screen with role-specific controls.
 
