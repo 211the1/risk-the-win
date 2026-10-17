@@ -117,7 +117,9 @@ export default function App() {
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
   const [soundEffectsOn, setSoundEffectsOn] = useState(true);
   const [backgroundMusicOn, setBackgroundMusicOn] = useState(true);
-  const [layoutEditMode, setLayoutEditMode] = useState(false);
+  const [layoutEditMode] = useState(false);
+  const [playerDropdownOpen, setPlayerDropdownOpen] = useState(false);
+  const [displayedPlayer, setDisplayedPlayer] = useState('Boone');
   const [gameLogoVisible, setGameLogoVisible] = useState(true);
   useEffect(() => {
     if (screen !== 'main-game') { setGameLogoVisible(true); return; }
@@ -322,8 +324,13 @@ export default function App() {
                 <Text style={styles.gameBackText}>‹ LOBBY</Text>
               </Pressable>
               <View style={styles.gamePlayerControls}>
-                <Image source={playersDropdownImage} style={styles.playersDropdownArtwork} resizeMode="contain" />
-                <Pressable accessibilityRole="button" accessibilityLabel="Player character dropdown" onPress={() => showMessage('Players', 'The player dropdown artwork is in place. Player selection will be connected later.')} style={styles.playerDropdownTapTarget} />
+                <Pressable accessibilityRole="button" accessibilityLabel="Choose player character" onPress={() => setPlayerDropdownOpen(value => !value)} style={styles.playerDropdownButton}>
+                  <Image source={playersDropdownImage} style={styles.playersDropdownArtwork} resizeMode="contain" />
+                  <Text numberOfLines={1} style={styles.playerDropdownName}>{displayedPlayer}</Text>
+                </Pressable>
+                {playerDropdownOpen && <View style={styles.playerDropdownMenu}>
+                  {characters.map(character => <Pressable key={character} accessibilityRole="button" onPress={() => { setDisplayedPlayer(character); setPlayerDropdownOpen(false); }} style={styles.playerDropdownOption}><Text style={styles.playerDropdownOptionText}>{character}</Text></Pressable>)}
+                </View>}
               </View>
             </MovableItem>
             <MovableItem editMode={layoutEditMode} label="Move and resize decks" layoutId="decks" style={styles.gameDeckArea}>
@@ -363,9 +370,6 @@ export default function App() {
                 <Image source={topCharacter} resizeMode="cover" style={styles.topCharacterPortrait} />
               </View>
             </MovableItem>
-            <Pressable accessibilityRole="button" accessibilityLabel={layoutEditMode ? "Lock screen layout" : "Edit screen layout"} onPress={() => setLayoutEditMode(value => !value)} style={styles.layoutModeButton}>
-              <Text style={styles.layoutModeButtonText}>{layoutEditMode ? "LOCK LAYOUT" : "EDIT LAYOUT"}</Text>
-            </Pressable>
             <Text style={styles.gamePreviewNote}>SCREEN PREVIEW · MULTIPLAYER NOT CONNECTED</Text>
           </View>
         )}
@@ -426,6 +430,11 @@ const styles = StyleSheet.create({
   gameBackButton:{paddingHorizontal:12,paddingVertical:8,borderRadius:10,borderWidth:1,borderColor:'#D5B56D',backgroundColor:'rgba(8,20,40,0.85)'},
   gameBackText:{color:'#FFE5A0',fontSize:12,fontWeight:'900'},
   playersDropdownArtwork:{width:'100%',height:'100%'},
+  playerDropdownButton:{width:'100%',height:'100%',justifyContent:'center'},
+  playerDropdownName:{position:'absolute',left:'8%',right:'22%',textAlign:'center',color:'#FFF2B5',fontWeight:'900',fontSize:11,textShadowColor:'#000',textShadowRadius:3},
+  playerDropdownMenu:{position:'absolute',top:'100%',right:0,width:150,maxHeight:240,backgroundColor:'#101B40',borderColor:'#F4CE59',borderWidth:2,borderRadius:8,zIndex:100,elevation:20},
+  playerDropdownOption:{paddingVertical:8,paddingHorizontal:10,borderBottomWidth:1,borderBottomColor:'#38456A'},
+  playerDropdownOptionText:{color:'#FFFFFF',fontSize:12,fontWeight:'700'},
   gameDeckArea:{width:'100%',flex:1,alignItems:'center',justifyContent:'center',paddingVertical:4},
   gameDeckTouch:{width:'100%',maxWidth:390,height:'38%',alignItems:'center',justifyContent:'center'},
   gameDecksArtwork:{width:'100%',height:'100%'},
