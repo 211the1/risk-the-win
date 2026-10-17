@@ -74,6 +74,9 @@ export default function App() {
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
   const [soundEffectsOn, setSoundEffectsOn] = useState(true);
   const [backgroundMusicOn, setBackgroundMusicOn] = useState(true);
+  const [handCards, setHandCards] = useState(handCardImages);
+  const [selectedHandCard, setSelectedHandCard] = useState<number | null>(null);
+  const [topDiscardCard, setTopDiscardCard] = useState(discardTopCardImage);
   const [handOffset, setHandOffset] = useState({ x: 0, y: 0 });
   const handOffsetRef = useRef({ x: 0, y: 0 });
   const handDragStart = useRef({ x: 0, y: 0 });
@@ -270,21 +273,23 @@ export default function App() {
               </View>
             </View>
             <View style={styles.gameDeckArea}>
-              <View style={styles.gameDeckTouch}>
+              <Pressable accessibilityRole="button" accessibilityLabel="Play selected card to discard pile" onPress={() => { if (selectedHandCard === null) { showMessage('Choose a card', 'Tap a card in your hand first, then tap the discard pile to play it.'); return; } const played = handCards[selectedHandCard]; setTopDiscardCard(played); setHandCards(cards => cards.filter((_, index) => index !== selectedHandCard)); setSelectedHandCard(null); }} style={styles.gameDeckTouch}>
                 <Image source={drawDiscardDecksImage} style={styles.gameDecksArtwork} resizeMode="contain" />
-                <Image source={discardTopCardImage} style={styles.discardTopCard} resizeMode="contain" />
-              </View>
+                <Image source={topDiscardCard} style={styles.discardTopCard} resizeMode="contain" />
+              </Pressable>
             </View>
             <View style={styles.gameBottomButtons}>
               <Pressable accessibilityRole="button" accessibilityLabel="Wake Up" onPress={() => showMessage('Wake Up', 'The button artwork is connected. Its in-game action will be added later.')} style={styles.gameActionButton}><Image source={wakeUpButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
               <Pressable accessibilityRole="button" accessibilityLabel="Emoji" onPress={() => showMessage('Emoji', 'The button artwork is connected. Emoji actions will be added later.')} style={styles.gameActionButton}><Image source={emojiButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
               <Pressable accessibilityRole="button" accessibilityLabel="Straighten cards" onPress={() => showMessage('Straighten Cards', 'The button artwork is connected. Card sorting will be added later.')} style={styles.gameActionButton}><Image source={sortButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
-              <Pressable accessibilityRole="button" accessibilityLabel="Draw card" onPress={() => showMessage('Draw Card', 'The button artwork is connected. Drawing cards will be implemented with the game logic later.')} style={styles.gameActionButton}><Image source={drawButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
+              <Pressable accessibilityRole="button" accessibilityLabel="Draw card" onPress={() => { const next = handCardImages[(handCards.length + 3) % handCardImages.length]; setHandCards(cards => [...cards, next]); }} style={styles.gameActionButton}><Image source={drawButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
               <Pressable accessibilityRole="button" accessibilityLabel="Push to talk" onPress={() => showMessage('Push-to-Talk', 'The button artwork is connected. Voice communication will be implemented later.')} style={styles.gameActionButton}><Image source={talkButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
             </View>
-            <View {...handPanResponder.panHandlers} style={[styles.playerHandFan, { transform: [{ translateX: handOffset.x }, { translateY: handOffset.y }] }]} accessibilityLabel="Your hand of eight cards. Drag to move it.">
-              {handCardImages.map((cardImage, index) => (
-                <Image key={`hand-card-${index}`} source={cardImage} resizeMode="contain" style={[styles.playerHandCard, { left: `${index * 8}%`, transform: [{ rotate: `${(index - 3.5) * 5}deg` }] }]} />
+            <View {...handPanResponder.panHandlers} style={[styles.playerHandFan, { transform: [{ translateX: handOffset.x }, { translateY: handOffset.y }] }]} accessibilityLabel={`Your hand of ${handCards.length} cards. Drag the fan to move it.`}>
+              {handCards.map((cardImage, index) => (
+                <Pressable key={`hand-card-${index}`} accessibilityRole="button" accessibilityLabel={`Select card ${index + 1}`} onPress={() => setSelectedHandCard(index)} style={[styles.playerHandCardTouch, { left: `${index * 8}%`, zIndex: selectedHandCard === index ? 20 : index + 1, transform: [{ translateY: selectedHandCard === index ? -18 : 0 }, { rotate: `${(index - (handCards.length - 1) / 2) * 5}deg` }] }]}>
+                  <Image source={cardImage} resizeMode="contain" style={styles.playerHandCard} />
+                </Pressable>
               ))}
             </View>
             <Text style={styles.gamePreviewNote}>SCREEN PREVIEW · MULTIPLAYER NOT CONNECTED</Text>
@@ -346,7 +351,8 @@ const styles = StyleSheet.create({
   gameActionButton:{flex:1,height:'100%',minWidth:0,alignItems:'center',justifyContent:'center'},
   gameActionArtwork:{width:'100%',height:'100%'},
   playerHandFan:{position:'absolute',right:'2%',bottom:'2%',width:'34%',height:'12%',zIndex:10,touchAction:'none'},
-  playerHandCard:{position:'absolute',bottom:0,width:'27%',height:'100%',borderRadius:5},
+  playerHandCardTouch:{position:'absolute',bottom:0,width:'27%',height:'100%'},
+  playerHandCard:{width:'100%',height:'100%',borderRadius:5},
   gamePreviewNote:{color:'#F8DFA2',fontSize:8,fontWeight:'800',textAlign:'center',marginTop:4,letterSpacing:1,textShadowColor:'#000',textShadowRadius:3},
   lobbyHotspot:{position:'absolute',backgroundColor:'transparent'},
   lobbyPortraitSlot:{position:'absolute',alignItems:'center',justifyContent:'center',overflow:'hidden',borderRadius:10,padding:0,backgroundColor:'transparent'},
