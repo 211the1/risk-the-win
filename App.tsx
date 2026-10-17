@@ -61,7 +61,6 @@ export default function App() {
   const [playerName, setPlayerName] = useState('');
   const [roomCode, setRoomCode] = useState('WIN-482');
   const [joinedPlayers, setJoinedPlayers] = useState<{name: string; character: string}[]>([]);
-  const hostHasChosenCharacter = joinedPlayers.length > 0;
   const compact = width < 500;
   const menuWidth = Math.min(width, height * (2 / 3));
   const buttonWidth = Math.min(menuWidth * 0.84, 440);
@@ -77,6 +76,16 @@ export default function App() {
     showMessage('Room Created', `Your room code is ${code}. Share it with friends so they can enter the same code.`);
   }
 
+  function copyRoomCode() {
+    if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(roomCode)
+        .then(() => showMessage('Room Code Copied', `Room code ${roomCode} is ready to paste.`))
+        .catch(() => showMessage('Room Code', roomCode));
+    } else {
+      showMessage('Room Code', roomCode);
+    }
+  }
+
   function inviteFriends() {
     const message = `Join my RISK THE WIN game! Room code: ${roomCode}. Open RISK THE WIN and enter this code to join.`;
     if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
@@ -87,7 +96,6 @@ export default function App() {
       showMessage('Invite Friends', message);
     }
   }
-
   function enterLobby(action: WelcomeAction) {
     setScreen('lobby');
     if (action === 'Create Game') generateRoomCode();
@@ -119,7 +127,7 @@ export default function App() {
                 <Pressable accessibilityRole="button" accessibilityLabel="Create Game" onPress={() => enterLobby('Create Game')} style={({pressed}) => [styles.mainButton,{width:buttonWidth,height:buttonHeight,opacity:pressed?0.82:1}]}>
                   <Image source={createGameImage} style={styles.buttonArtwork} resizeMode="contain" />
                 </Pressable>
-                <Pressable accessibilityRole="button" accessibilityLabel="Join Game" disabled={!hostHasChosenCharacter} onPress={() => { if (hostHasChosenCharacter) enterLobby('Join Game'); }} style={({pressed}) => [styles.mainButton,{width:buttonWidth,height:buttonHeight,opacity:!hostHasChosenCharacter?0.42:(pressed?0.82:1)}]}>
+                <Pressable accessibilityRole="button" accessibilityLabel="Join Game" onPress={() => enterLobby('Join Game')} style={({pressed}) => [styles.mainButton,{width:buttonWidth,height:buttonHeight,opacity:pressed?0.82:1}]}>
                   <Image source={joinGameImage} style={styles.buttonArtwork} resizeMode="contain" />
                 </Pressable>
               </View>
@@ -219,7 +227,7 @@ export default function App() {
             <Pressable accessibilityRole="button" accessibilityLabel="Back to welcome screen" onPress={() => setScreen('welcome')} style={[styles.lobbyHotspot, { left: '1%', top: '6%', width: '25%', height: '7%' }]} />
             <Pressable accessibilityRole="button" accessibilityLabel="Start game" onPress={() => showMessage('Start Game', selectedCharacter ? `You selected ${selectedCharacter}. Online multiplayer and game start still need the server connection.` : 'Choose a character first.')} style={[styles.lobbyHotspot, { left: '3%', top: '85%', width: '48%', height: '10%' }]} />
             <Pressable accessibilityRole="button" accessibilityLabel="Invite friends" onPress={inviteFriends} style={[styles.lobbyHotspot, { left: '54%', top: '85%', width: '43%', height: '10%' }]} />
-            <Pressable accessibilityRole="button" accessibilityLabel="Copy room code" onPress={generateRoomCode} style={[styles.lobbyHotspot, { left: '45%', top: '19%', width: '11%', height: '7%' }]} />
+            <Pressable accessibilityRole="button" accessibilityLabel="Copy room code" onPress={copyRoomCode} style={[styles.lobbyHotspot, { left: '45%', top: '19%', width: '11%', height: '7%' }]} />
           </View>
         )}
         {settingsOpen && !howToPlayOpen && screen === 'welcome' && (
