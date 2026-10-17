@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
-  Alert, Image, ImageBackground, Platform, Pressable, ScrollView,
+  Alert, Image, ImageBackground, PanResponder, Platform, Pressable, ScrollView,
   StatusBar, StyleSheet, Text, TextInput, View, useWindowDimensions,
 } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
@@ -74,6 +74,15 @@ export default function App() {
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
   const [soundEffectsOn, setSoundEffectsOn] = useState(true);
   const [backgroundMusicOn, setBackgroundMusicOn] = useState(true);
+  const [handOffset, setHandOffset] = useState({ x: 0, y: 0 });
+  const handDragStart = useRef({ x: 0, y: 0 });
+  const handPanResponder = useRef(PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderGrant: () => { handDragStart.current = handOffset; },
+    onPanResponderMove: (_, gesture) => setHandOffset({ x: handDragStart.current.x + gesture.dx, y: handDragStart.current.y + gesture.dy }),
+    onPanResponderRelease: (_, gesture) => setHandOffset({ x: handDragStart.current.x + gesture.dx, y: handDragStart.current.y + gesture.dy }),
+  })).current;
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
   const [pendingCharacter, setPendingCharacter] = useState<string | null>(null);
   const [joinDialogOpen, setJoinDialogOpen] = useState(false);
@@ -272,7 +281,7 @@ export default function App() {
               <Pressable accessibilityRole="button" accessibilityLabel="Draw card" onPress={() => showMessage('Draw Card', 'The button artwork is connected. Drawing cards will be implemented with the game logic later.')} style={styles.gameActionButton}><Image source={drawButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
               <Pressable accessibilityRole="button" accessibilityLabel="Push to talk" onPress={() => showMessage('Push-to-Talk', 'The button artwork is connected. Voice communication will be implemented later.')} style={styles.gameActionButton}><Image source={talkButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
             </View>
-            <View style={styles.playerHandFan} accessibilityLabel="Your hand of eight cards">
+            <View {...handPanResponder.panHandlers} style={[styles.playerHandFan, { transform: [{ translateX: handOffset.x }, { translateY: handOffset.y }] }]} accessibilityLabel="Your hand of eight cards. Drag to move it.">
               {handCardImages.map((cardImage, index) => (
                 <Image key={`hand-card-${index}`} source={cardImage} resizeMode="contain" style={[styles.playerHandCard, { left: `${index * 8}%`, transform: [{ rotate: `${(index - 3.5) * 5}deg` }] }]} />
               ))}
@@ -335,7 +344,7 @@ const styles = StyleSheet.create({
   gameBottomButtons:{width:'100%',maxWidth:760,flexDirection:'row',alignItems:'center',justifyContent:'space-evenly',gap:4,minHeight:76,maxHeight:112},
   gameActionButton:{flex:1,height:'100%',minWidth:0,alignItems:'center',justifyContent:'center'},
   gameActionArtwork:{width:'100%',height:'100%'},
-  playerHandFan:{position:'absolute',right:'2%',bottom:'3%',width:'42%',height:'17%',zIndex:4},
+  playerHandFan:{position:'absolute',right:'2%',bottom:'2%',width:'34%',height:'12%',zIndex:10,touchAction:'none'},
   playerHandCard:{position:'absolute',bottom:0,width:'27%',height:'100%',borderRadius:5},
   gamePreviewNote:{color:'#F8DFA2',fontSize:8,fontWeight:'800',textAlign:'center',marginTop:4,letterSpacing:1,textShadowColor:'#000',textShadowRadius:3},
   lobbyHotspot:{position:'absolute',backgroundColor:'transparent'},
