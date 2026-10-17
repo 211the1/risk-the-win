@@ -13,9 +13,17 @@ const settingsImage = require('./assets/screens/welcome/buttons/settings-button.
 const settingsMenuImage = require('./assets/screens/welcome/buttons/settings-menu.png');
 const howToPlayMenuImage = require('./assets/screens/welcome/buttons/how-to-play-menu.png');
 const playerNamePanelImage = require('./assets/screens/lobby/ui/player-name-panel.png');
+const mainGameBackgroundImage = require('./assets/screens/main-game/backgrounds/main-game-background.png');
+const wakeUpButtonImage = require('./assets/screens/main-game/buttons/wake-up-button.png');
+const emojiButtonImage = require('./assets/screens/main-game/buttons/emoji-button.png');
+const sortButtonImage = require('./assets/screens/main-game/buttons/sort-button.png');
+const drawButtonImage = require('./assets/screens/main-game/buttons/draw-button.png');
+const talkButtonImage = require('./assets/screens/main-game/buttons/talk-button.png');
+const playersDropdownImage = require('./assets/screens/main-game/buttons/players-dropdown.png');
+const drawDiscardDecksImage = require('./assets/screens/main-game/cards/draw-discard-decks.png');
 
 type WelcomeAction = 'Create Game' | 'Join Game';
-type Screen = 'welcome' | 'lobby';
+type Screen = 'welcome' | 'lobby' | 'main-game';
 const characters = ['Boone', 'Ling Ling', 'Meemaw', 'Juby', 'Face', 'Bug', 'Theone', 'Beanz', 'Chicken Joe', 'Bob', 'Jayme', 'Trevor'];
 const characterPortraits: Record<string, any> = {
   'Boone': require('./assets/shared/characters/boone.png'),
@@ -119,7 +127,7 @@ export default function App() {
     <View style={styles.root}>
       <StatusBar hidden />
       <ExpoStatusBar hidden />
-      <ImageBackground source={screen === 'lobby' ? lobbyBackgroundImage : backgroundImage} resizeMode={screen === 'lobby' ? 'stretch' : 'contain'} style={styles.background} imageStyle={styles.backgroundImage}>
+      <ImageBackground source={screen === 'main-game' ? mainGameBackgroundImage : screen === 'lobby' ? lobbyBackgroundImage : backgroundImage} resizeMode={screen === 'welcome' ? 'contain' : 'stretch'} style={styles.background} imageStyle={styles.backgroundImage}>
         {screen === 'welcome' ? (
           <View style={[styles.controls, { paddingBottom: Math.max(24, height * 0.045) }]}>
             <View style={[styles.menu, { width: menuWidth }]}>
@@ -136,7 +144,7 @@ export default function App() {
               </Pressable>
             </View>
           </View>
-        ) : (
+        ) : screen === 'lobby' ? (
           <View style={styles.lobbyArtworkRoot}>
             {/* The uploaded lobby artwork is the screen background; these controls sit over its matching areas. */}
             {characters.map((character, index) => {
@@ -225,9 +233,33 @@ export default function App() {
               </View>
             )}
             <Pressable accessibilityRole="button" accessibilityLabel="Back to welcome screen" onPress={() => setScreen('welcome')} style={[styles.lobbyHotspot, { left: '1%', top: '6%', width: '25%', height: '7%' }]} />
-            <Pressable accessibilityRole="button" accessibilityLabel="Start game" onPress={() => showMessage('Start Game', selectedCharacter ? `You selected ${selectedCharacter}. Online multiplayer and game start still need the server connection.` : 'Choose a character first.')} style={[styles.lobbyHotspot, { left: '3%', top: '85%', width: '48%', height: '10%' }]} />
+            <Pressable accessibilityRole="button" accessibilityLabel="Start game preview" onPress={() => setScreen('main-game')} style={[styles.lobbyHotspot, { left: '3%', top: '85%', width: '48%', height: '10%' }]} />
             <Pressable accessibilityRole="button" accessibilityLabel="Invite friends" onPress={inviteFriends} style={[styles.lobbyHotspot, { left: '54%', top: '85%', width: '43%', height: '10%' }]} />
             <Pressable accessibilityRole="button" accessibilityLabel="Copy room code" onPress={copyRoomCode} style={[styles.lobbyHotspot, { left: '45%', top: '19%', width: '11%', height: '7%' }]} />
+          </View>
+        ) : (
+          <View style={styles.gamePreviewRoot}>
+            <View style={styles.gameTopBar}>
+              <Pressable accessibilityRole="button" accessibilityLabel="Back to lobby" onPress={() => setScreen('lobby')} style={styles.gameBackButton}>
+                <Text style={styles.gameBackText}>‹ LOBBY</Text>
+              </Pressable>
+              <Image source={playersDropdownImage} style={styles.playersDropdownArtwork} resizeMode="contain" />
+            </View>
+            <View style={styles.gameDeckArea}>
+              <View style={styles.gameDeckTouch}>
+                <Image source={drawDiscardDecksImage} style={styles.gameDecksArtwork} resizeMode="contain" />
+              </View>
+              <Text style={styles.gameDeckLabels}>DRAW DECK                         DISCARD PILE</Text>
+              <Text style={styles.gameDeckCount}>Cards remaining: —</Text>
+            </View>
+            <View style={styles.gameBottomButtons}>
+              <Pressable accessibilityRole="button" accessibilityLabel="Wake Up" onPress={() => showMessage('Wake Up', 'The button artwork is connected. Its in-game action will be added later.')} style={styles.gameActionButton}><Image source={wakeUpButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
+              <Pressable accessibilityRole="button" accessibilityLabel="Emoji" onPress={() => showMessage('Emoji', 'The button artwork is connected. Emoji actions will be added later.')} style={styles.gameActionButton}><Image source={emojiButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
+              <Pressable accessibilityRole="button" accessibilityLabel="Straighten cards" onPress={() => showMessage('Straighten Cards', 'The button artwork is connected. Card sorting will be added later.')} style={styles.gameActionButton}><Image source={sortButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
+              <Pressable accessibilityRole="button" accessibilityLabel="Draw card" onPress={() => showMessage('Draw Card', 'The button artwork is connected. Drawing cards will be implemented with the game logic later.')} style={styles.gameActionButton}><Image source={drawButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
+              <Pressable accessibilityRole="button" accessibilityLabel="Push to talk" onPress={() => showMessage('Push-to-Talk', 'The button artwork is connected. Voice communication will be implemented later.')} style={styles.gameActionButton}><Image source={talkButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable>
+            </View>
+            <Text style={styles.gamePreviewNote}>SCREEN PREVIEW · MULTIPLAYER NOT CONNECTED</Text>
           </View>
         )}
         {settingsOpen && !howToPlayOpen && screen === 'welcome' && (
@@ -268,6 +300,20 @@ const styles = StyleSheet.create({
   settingsButton:{position:'absolute',alignItems:'center',justifyContent:'center'},
   settingsArtwork:{width:'100%',height:'100%'},
   lobbyArtworkRoot:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
+  gamePreviewRoot:{...StyleSheet.absoluteFillObject,alignItems:'center',justifyContent:'space-between',paddingTop:Platform.OS==='web'?16:28,paddingBottom:12,paddingHorizontal:10,backgroundColor:'rgba(4,10,25,0.10)'},
+  gameTopBar:{width:'100%',flexDirection:'row',alignItems:'flex-start',justifyContent:'space-between',minHeight:'12%'},
+  gameBackButton:{paddingHorizontal:12,paddingVertical:8,borderRadius:10,borderWidth:1,borderColor:'#D5B56D',backgroundColor:'rgba(8,20,40,0.85)'},
+  gameBackText:{color:'#FFE5A0',fontSize:12,fontWeight:'900'},
+  playersDropdownArtwork:{width:'44%',height:64},
+  gameDeckArea:{width:'100%',flex:1,alignItems:'center',justifyContent:'center',paddingVertical:4},
+  gameDeckTouch:{width:'100%',maxWidth:720,height:'78%',alignItems:'center',justifyContent:'center'},
+  gameDecksArtwork:{width:'100%',height:'100%'},
+  gameDeckLabels:{color:'#FFF0C3',fontWeight:'900',fontSize:10,textAlign:'center',letterSpacing:1,marginTop:2,textShadowColor:'#000',textShadowRadius:4},
+  gameDeckCount:{color:'#FFFFFF',fontWeight:'800',fontSize:9,marginTop:3,textShadowColor:'#000',textShadowRadius:4},
+  gameBottomButtons:{width:'100%',maxWidth:760,flexDirection:'row',alignItems:'center',justifyContent:'space-evenly',gap:4,minHeight:76,maxHeight:112},
+  gameActionButton:{flex:1,height:'100%',minWidth:0,alignItems:'center',justifyContent:'center'},
+  gameActionArtwork:{width:'100%',height:'100%'},
+  gamePreviewNote:{color:'#F8DFA2',fontSize:8,fontWeight:'800',textAlign:'center',marginTop:4,letterSpacing:1,textShadowColor:'#000',textShadowRadius:3},
   lobbyHotspot:{position:'absolute',backgroundColor:'transparent'},
   lobbyPortraitSlot:{position:'absolute',alignItems:'center',justifyContent:'center',overflow:'hidden',borderRadius:10,padding:0,backgroundColor:'transparent'},
   lobbyPortraitImage:{width:'100%',height:'100%',alignSelf:'center',flexShrink:0},
