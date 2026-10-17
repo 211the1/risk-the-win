@@ -252,7 +252,7 @@ export default function App() {
             <View style={styles.gameDeckArea}>
               <View style={styles.gameDeckTouch}>
                 <Image source={drawDiscardDecksImage} style={styles.gameDecksArtwork} resizeMode="contain" />
-                <Image source={discardTopCardImage} style={styles.discardTopCard} resizeMode="stretch" />
+                <Image source={discardTopCardImage} style={styles.discardTopCard} resizeMode="contain" />
               </View>
             </View>
             <View style={styles.gameBottomButtons}>
@@ -305,9 +305,10 @@ const styles = StyleSheet.create({
   lobbyArtworkRoot:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
   gamePreviewRoot:{...StyleSheet.absoluteFillObject,alignItems:'center',justifyContent:'space-between',paddingTop:Platform.OS==='web'?16:28,paddingBottom:12,paddingHorizontal:10,backgroundColor:'rgba(4,10,25,0.10)'},
   gameTopBar:{width:'100%',flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-end',minHeight:'12%'},
-  gamePlayerControls:{position:'absolute',right:0,top:58,width:'44%',height:64},
+  gamePlayerControls:{position:'absolute',right:0,top:92,width:'30%',height:54},
+  
   playerDropdownTapTarget:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
-  discardTopCard:{position:'absolute',left:'55%',top:'9%',width:'23%',height:'39%'},
+  discardTopCard:{position:'absolute',left:'53%',top:'4%',width:'29%',height:'47%'},
   gameBackButton:{paddingHorizontal:12,paddingVertical:8,borderRadius:10,borderWidth:1,borderColor:'#D5B56D',backgroundColor:'rgba(8,20,40,0.85)'},
   gameBackText:{color:'#FFE5A0',fontSize:12,fontWeight:'900'},
   playersDropdownArtwork:{width:'44%',height:64},
