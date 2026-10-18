@@ -85,17 +85,10 @@ const howToPlayText =
   '• The first player to get rid of all their cards wins, unless Final Showdown rules decide the result.';
 
 function MovableItem({ children, editMode, style, label, layoutId }: { children: React.ReactNode; editMode: boolean; style?: any; label: string; layoutId: string }) {
-  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const storageKey = 'risk-the-win-layout-v2-' + layoutId;
   const [savedLayout, setSavedLayout] = useState(() => LAYOUT_DEFAULTS[layoutId] || { offset: { x: 0, y: 0 }, scale: 1 });
   const [offset, setOffset] = useState(savedLayout.offset);
   const [scale, setScale] = useState(savedLayout.scale);
-  // Scale saved layout nudges for the current device and clamp them so controls don't drift far off-screen.
-  const responsiveOffset = {
-    x: Math.max(-screenWidth * 0.28, Math.min(screenWidth * 0.28, offset.x * (screenWidth / 390))),
-    y: Math.max(-screenHeight * 0.28, Math.min(screenHeight * 0.28, offset.y * (screenHeight / 844))),
-  };
-  const responsiveScale = scale * Math.max(0.72, Math.min(1, screenWidth / 390));
   const saveLayout = (nextOffset: {x:number;y:number}, nextScale: number) => {
     const next = { offset: nextOffset, scale: nextScale };
     setSavedLayout(next);
@@ -120,7 +113,7 @@ function MovableItem({ children, editMode, style, label, layoutId }: { children:
     onPanResponderMove: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scaleRef.current); },
     onPanResponderRelease: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scaleRef.current); },
   })).current;
-  return <View {...pan.panHandlers} accessibilityLabel={label} style={[style, { maxWidth: '100%', transform: [{ translateX: responsiveOffset.x }, { translateY: responsiveOffset.y }, { scale: responsiveScale }] }]}>
+  return <View {...pan.panHandlers} accessibilityLabel={label} style={[style, { transform: [{ translateX: offset.x }, { translateY: offset.y }, { scale }] }]}>
     {children}
     {editMode && <View style={styles.layoutItemControls}>
       <Pressable onPress={() => setScale(s => { const n = Number((s + 0.1).toFixed(2)); saveLayout(offset, n); return n; })} style={styles.layoutItemButton}><Text style={styles.layoutItemButtonText}>+</Text></Pressable>
@@ -440,7 +433,7 @@ const styles = StyleSheet.create({
   gamePreviewRoot:{...StyleSheet.absoluteFillObject,alignItems:'center',justifyContent:'space-between',paddingTop:Platform.OS==='web'?16:28,paddingBottom:12,paddingHorizontal:10,backgroundColor:'rgba(4,10,25,0.10)'},
   gameLogoPosition:{position:'absolute',left:'2%',top:'2%',width:'25%',height:'10%',zIndex:15},
   gameLogoArtwork:{width:'100%',height:'100%'},
-  topCharacterPosition:{position:'absolute',left:'39%',top:'1%',width:'19%',height:'22%',maxWidth:74,maxHeight:90,zIndex:16,alignItems:'center',justifyContent:'center'},
+  topCharacterPosition:{position:'absolute',left:'39%',top:'1%',width:74,height:90,zIndex:16,alignItems:'center',justifyContent:'center'},
   goldCharacterRing:{width:'100%',height:'100%',borderRadius:48,borderWidth:4,borderColor:'#F4CE59',backgroundColor:'#10234F',padding:4,alignItems:'center',justifyContent:'center',overflow:'hidden',shadowColor:'#000',shadowOpacity:0.6,shadowRadius:5,elevation:7},
   topCharacterPortrait:{width:'100%',height:'100%',borderRadius:40},
   layoutModeButton:{position:'absolute',right:8,top:8,zIndex:50,paddingHorizontal:10,paddingVertical:7,borderRadius:8,borderWidth:2,borderColor:'#F4CE59',backgroundColor:'#10234F'},
@@ -464,16 +457,16 @@ const styles = StyleSheet.create({
   playerDropdownOption:{paddingVertical:8,paddingHorizontal:10,borderBottomWidth:1,borderBottomColor:'#38456A'},
   playerDropdownOptionText:{color:'#FFFFFF',fontSize:12,fontWeight:'700'},
   gameDeckArea:{width:'100%',flex:1,alignItems:'center',justifyContent:'center',paddingVertical:4},
-  gameDeckTouch:{width:'92%',maxWidth:390,height:'38%',maxHeight:'38%',alignItems:'center',justifyContent:'center'},
+  gameDeckTouch:{width:'100%',maxWidth:390,height:'38%',alignItems:'center',justifyContent:'center'},
   gameDecksArtwork:{width:'100%',height:'100%'},
   gameDeckLabels:{color:'#FFF0C3',fontWeight:'900',fontSize:10,textAlign:'center',letterSpacing:1,marginTop:2,textShadowColor:'#000',textShadowRadius:4},
   gameDeckCount:{color:'#FFFFFF',fontWeight:'800',fontSize:9,marginTop:3,textShadowColor:'#000',textShadowRadius:4},
-  gameBottomButtons:{width:'100%',maxWidth:760,flexDirection:'row',alignItems:'center',justifyContent:'space-evenly',gap:2,minHeight:48,maxHeight:112},
+  gameBottomButtons:{width:'100%',maxWidth:760,flexDirection:'row',alignItems:'center',justifyContent:'space-evenly',gap:4,minHeight:76,maxHeight:112},
   gameActionButton:{flex:1,height:96,minWidth:44,alignItems:'center',justifyContent:'center',overflow:'visible'},
   gameActionArtwork:{width:'100%',height:96,minWidth:44},
   discardTopCardMovable:{position:'absolute',left:'48%',top:'0%',width:'35.19%',height:'70.38%',zIndex:30},
   discardTopCardArtwork:{width:'100%',height:'100%'},
-  playerHandFan:{position:'absolute',left:'4%',bottom:'7%',width:'92%',height:'23%',maxWidth:'100%',zIndex:10,overflow:'visible'},
+  playerHandFan:{position:'absolute',left:'17%',bottom:'7%',width:'66%',height:'23%',zIndex:10,overflow:'visible'},
   playerHandScroll:{width:'100%',height:'100%'},
   playerHandScrollContent:{alignItems:'flex-end',paddingHorizontal:5,gap:8},
   playerHandScrollCard:{width:90,height:'96%',alignSelf:'flex-end',marginBottom:0},
