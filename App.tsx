@@ -85,10 +85,14 @@ const howToPlayText =
   '• The first player to get rid of all their cards wins, unless Final Showdown rules decide the result.';
 
 function MovableItem({ children, editMode, style, label, layoutId }: { children: React.ReactNode; editMode: boolean; style?: any; label: string; layoutId: string }) {
+  const { width: deviceWidth, height: deviceHeight } = useWindowDimensions();
   const storageKey = 'risk-the-win-layout-v2-' + layoutId;
   const [savedLayout, setSavedLayout] = useState(() => LAYOUT_DEFAULTS[layoutId] || { offset: { x: 0, y: 0 }, scale: 1 });
   const [offset, setOffset] = useState(savedLayout.offset);
   const [scale, setScale] = useState(savedLayout.scale);
+  // Preserve approved offsets exactly; only reduce item scale when the available viewport is smaller.
+  const deviceFitScale = Math.max(0.68, Math.min(1, deviceWidth / 390, deviceHeight / 680));
+  const fittedScale = scale * deviceFitScale;
   const saveLayout = (nextOffset: {x:number;y:number}, nextScale: number) => {
     const next = { offset: nextOffset, scale: nextScale };
     setSavedLayout(next);
@@ -113,7 +117,7 @@ function MovableItem({ children, editMode, style, label, layoutId }: { children:
     onPanResponderMove: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scaleRef.current); },
     onPanResponderRelease: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scaleRef.current); },
   })).current;
-  return <View {...pan.panHandlers} accessibilityLabel={label} style={[style, { transform: [{ translateX: offset.x }, { translateY: offset.y }, { scale }] }]}>
+  return <View {...pan.panHandlers} accessibilityLabel={label} style={[style, { maxWidth: '100%', transform: [{ translateX: offset.x }, { translateY: offset.y }, { scale: fittedScale }] }]}>
     {children}
     {editMode && <View style={styles.layoutItemControls}>
       <Pressable onPress={() => setScale(s => { const n = Number((s + 0.1).toFixed(2)); saveLayout(offset, n); return n; })} style={styles.layoutItemButton}><Text style={styles.layoutItemButtonText}>+</Text></Pressable>
@@ -430,10 +434,10 @@ const styles = StyleSheet.create({
   settingsButton:{position:'absolute',alignItems:'center',justifyContent:'center'},
   settingsArtwork:{width:'100%',height:'100%'},
   lobbyArtworkRoot:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
-  gamePreviewRoot:{...StyleSheet.absoluteFillObject,alignItems:'center',justifyContent:'space-between',paddingTop:Platform.OS==='web'?16:28,paddingBottom:12,paddingHorizontal:10,backgroundColor:'rgba(4,10,25,0.10)'},
+  gamePreviewRoot:{...StyleSheet.absoluteFillObject,alignItems:'center',justifyContent:'space-between',paddingTop:Platform.OS==='web'? '2%' : '3%',paddingBottom:'1.5%',paddingHorizontal:'2%',backgroundColor:'rgba(4,10,25,0.10)'},
   gameLogoPosition:{position:'absolute',left:'2%',top:'2%',width:'25%',height:'10%',zIndex:15},
   gameLogoArtwork:{width:'100%',height:'100%'},
-  topCharacterPosition:{position:'absolute',left:'39%',top:'1%',width:74,height:90,zIndex:16,alignItems:'center',justifyContent:'center'},
+  topCharacterPosition:{position:'absolute',left:'39%',top:'1%',width:'19%',height:'22%',maxWidth:74,maxHeight:90,zIndex:16,alignItems:'center',justifyContent:'center'},
   goldCharacterRing:{width:'100%',height:'100%',borderRadius:48,borderWidth:4,borderColor:'#F4CE59',backgroundColor:'#10234F',padding:4,alignItems:'center',justifyContent:'center',overflow:'hidden',shadowColor:'#000',shadowOpacity:0.6,shadowRadius:5,elevation:7},
   topCharacterPortrait:{width:'100%',height:'100%',borderRadius:40},
   layoutModeButton:{position:'absolute',right:8,top:8,zIndex:50,paddingHorizontal:10,paddingVertical:7,borderRadius:8,borderWidth:2,borderColor:'#F4CE59',backgroundColor:'#10234F'},
@@ -442,8 +446,8 @@ const styles = StyleSheet.create({
   layoutItemButton:{width:25,height:25,alignItems:'center',justifyContent:'center',borderRadius:13,borderWidth:1,borderColor:'#F4CE59',backgroundColor:'#10234F'},
   layoutItemButtonText:{color:'#FFFFFF',fontSize:18,fontWeight:'900'},
   gameTopBar:{width:'100%',flexDirection:'row',alignItems:'flex-start',justifyContent:'space-between',minHeight:'12%'},
-  gamePlayerControls:{position:'absolute',right:0,top:38,width:'30%',height:64,zIndex:100,overflow:'visible',elevation:100},
-  gameLobbyButton:{position:'absolute',left:0,top:0,width:100,height:42,zIndex:20},
+  gamePlayerControls:{position:'absolute',right:0,top:'5%',width:'30%',height:'8%',maxHeight:64,zIndex:100,overflow:'visible',elevation:100},
+  gameLobbyButton:{position:'absolute',left:0,top:0,width:'26%',maxWidth:100,height:'6%',maxHeight:42,zIndex:20},
   
   playerDropdownTapTarget:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
   discardTopCard:{position:'absolute',left:'48%',top:'0%',width:'35.19%',height:'70.38%'},
@@ -462,14 +466,14 @@ const styles = StyleSheet.create({
   gameDeckLabels:{color:'#FFF0C3',fontWeight:'900',fontSize:10,textAlign:'center',letterSpacing:1,marginTop:2,textShadowColor:'#000',textShadowRadius:4},
   gameDeckCount:{color:'#FFFFFF',fontWeight:'800',fontSize:9,marginTop:3,textShadowColor:'#000',textShadowRadius:4},
   gameBottomButtons:{width:'100%',maxWidth:760,flexDirection:'row',alignItems:'center',justifyContent:'space-evenly',gap:4,minHeight:76,maxHeight:112},
-  gameActionButton:{flex:1,height:96,minWidth:44,alignItems:'center',justifyContent:'center',overflow:'visible'},
-  gameActionArtwork:{width:'100%',height:96,minWidth:44},
+  gameActionButton:{flex:1,height:'100%',maxHeight:96,minWidth:0,alignItems:'center',justifyContent:'center',overflow:'visible'},
+  gameActionArtwork:{width:'100%',height:'100%',maxHeight:96},
   discardTopCardMovable:{position:'absolute',left:'48%',top:'0%',width:'35.19%',height:'70.38%',zIndex:30},
   discardTopCardArtwork:{width:'100%',height:'100%'},
   playerHandFan:{position:'absolute',left:'17%',bottom:'7%',width:'66%',height:'23%',zIndex:10,overflow:'visible'},
   playerHandScroll:{width:'100%',height:'100%'},
   playerHandScrollContent:{alignItems:'flex-end',paddingHorizontal:5,gap:8},
-  playerHandScrollCard:{width:90,height:'96%',alignSelf:'flex-end',marginBottom:0},
+  playerHandScrollCard:{width:'23vw',maxWidth:90,minWidth:58,height:'96%',alignSelf:'flex-end',marginBottom:0},
   playerHandScrollCardSelected:{transform:[{translateY:-12}],borderWidth:2,borderColor:'#F4CE59',borderRadius:6},
   playerHandCard:{width:'100%',height:'100%',borderRadius:5},
   handZoomControls:{position:'absolute',right:0,bottom:0,flexDirection:'row',gap:5,zIndex:30},
