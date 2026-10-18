@@ -34,6 +34,8 @@ const handCardImages = [
   require('./assets/screens/main-game/cards/characters/chicken-joe-yellow.png'),
 ];
 
+const LAYOUT_EDITING_ENABLED = false; // Set to true in App.tsx when you want to edit the layout again.
+
 type WelcomeAction = 'Create Game' | 'Join Game';
 type Screen = 'welcome' | 'lobby' | 'main-game';
 const characters = ['Boone', 'Ling Ling', 'Meemaw', 'Juby', 'Face', 'Bug', 'Theone', 'Beanz', 'Chicken Joe', 'Bob', 'Jayme', 'Trevor'];
@@ -125,7 +127,7 @@ export default function App() {
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
   const [soundEffectsOn, setSoundEffectsOn] = useState(true);
   const [backgroundMusicOn, setBackgroundMusicOn] = useState(true);
-  const [layoutEditMode, setLayoutEditMode] = useState(true);
+  const [layoutEditMode, setLayoutEditMode] = useState(LAYOUT_EDITING_ENABLED);
   const [playerDropdownOpen, setPlayerDropdownOpen] = useState(false);
   const [displayedPlayer, setDisplayedPlayer] = useState('Boone');
   const [gameLogoVisible, setGameLogoVisible] = useState(true);
@@ -371,9 +373,9 @@ export default function App() {
                 <Image source={topCharacter} resizeMode="cover" style={styles.topCharacterPortrait} />
               </View>
             </MovableItem>
-            <Pressable accessibilityRole="button" accessibilityLabel={layoutEditMode ? "Lock screen layout" : "Edit screen layout"} onPress={() => setLayoutEditMode(value => !value)} style={styles.layoutModeButton}>
+            {LAYOUT_EDITING_ENABLED && <Pressable accessibilityRole="button" accessibilityLabel={layoutEditMode ? "Lock screen layout" : "Edit screen layout"} onPress={() => setLayoutEditMode(value => !value)} style={styles.layoutModeButton}>
               <Text style={styles.layoutModeButtonText}>{layoutEditMode ? "LOCK LAYOUT" : "EDIT LAYOUT"}</Text>
-            </Pressable>
+            </Pressable>}
             <Text style={styles.gamePreviewNote}>SCREEN PREVIEW · MULTIPLAYER NOT CONNECTED</Text>
           </View>
         )}
