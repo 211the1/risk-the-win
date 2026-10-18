@@ -148,7 +148,7 @@ export default function App() {
     onPanResponderMove: (_, g) => {
       const maxIndex = Math.max(0, handCards.length - 1);
       if (Math.abs(g.dx) > Math.abs(g.dy)) {
-        const step = Math.round(-g.dx / 34);
+        const step = Math.trunc(-g.dx / 42);
         setBrowsedHandCard(Math.max(0, Math.min(maxIndex, fanGestureStart.current.browsed + step)));
       } else {
         setFanSpread(Math.max(0.45, Math.min(1.8, fanGestureStart.current.spread + (-g.dy / 170))));
@@ -387,7 +387,7 @@ export default function App() {
                   const angle = distance * 7 * fanSpread;
                   const curveLift = normalized * normalized * 34 * fanSpread;
                   const browseLift = index === browsedHandCard && selectedHandCard !== index ? -10 : 0;
-                  return <Pressable key={`hand-card-${index}`} accessibilityRole="button" accessibilityLabel={`Select card ${index + 1}`} onPress={() => setSelectedHandCard(index)} style={[styles.playerHandCardTouch, { left: handCards.length > 1 ? `${(index / (handCards.length - 1)) * 78 * fanSpread + (1 - fanSpread) * 39}%` : '39%', zIndex: selectedHandCard === index ? 30 : index === browsedHandCard ? 25 : index + 1, transform: [{ translateY: -curveLift + browseLift + (selectedHandCard === index ? -18 : 0) }, { rotate: `${angle}deg` }] }]}>
+                  return <Pressable key={`hand-card-${index}`} accessibilityRole="button" accessibilityLabel={`Select card ${index + 1}`} onPress={() => setSelectedHandCard(index)} style={[styles.playerHandCardTouch, { left: handCards.length > 1 ? `${(index / (handCards.length - 1)) * 78 * fanSpread + (1 - fanSpread) * 39}%` : '39%', zIndex: selectedHandCard === index ? 30 : index === browsedHandCard ? 25 : index + 1, transform: [{ translateX: -browsedHandCard * 13 }, { translateY: -curveLift + browseLift + (selectedHandCard === index ? -18 : 0) }, { rotate: `${angle}deg` }] }]}>
                     <Image source={cardImage} resizeMode="contain" style={styles.playerHandCard} />
                   </Pressable>;
                 })}
@@ -457,7 +457,7 @@ const styles = StyleSheet.create({
   layoutItemButton:{width:25,height:25,alignItems:'center',justifyContent:'center',borderRadius:13,borderWidth:1,borderColor:'#F4CE59',backgroundColor:'#10234F'},
   layoutItemButtonText:{color:'#FFFFFF',fontSize:18,fontWeight:'900'},
   gameTopBar:{width:'100%',flexDirection:'row',alignItems:'flex-start',justifyContent:'space-between',minHeight:'12%'},
-  gamePlayerControls:{position:'absolute',right:0,top:38,width:'30%',height:64},
+  gamePlayerControls:{position:'absolute',right:0,top:38,width:'30%',height:64,zIndex:100,overflow:'visible',elevation:100},
   gameLobbyButton:{position:'absolute',left:0,top:0,width:100,height:42,zIndex:20},
   
   playerDropdownTapTarget:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
   playersDropdownArtwork:{width:'100%',height:'100%'},
   playerDropdownButton:{width:'100%',height:'100%',justifyContent:'center'},
   playerDropdownName:{position:'absolute',left:'8%',right:'22%',textAlign:'center',color:'#FFF2B5',fontWeight:'900',fontSize:11,textShadowColor:'#000',textShadowRadius:3},
-  playerDropdownMenu:{position:'absolute',top:'100%',right:0,width:150,height:297,backgroundColor:'#101B40',borderColor:'#F4CE59',borderWidth:2,borderRadius:8,zIndex:100,elevation:20},
+  playerDropdownMenu:{position:'absolute',top:'100%',right:0,width:150,height:297,backgroundColor:'#101B40',borderColor:'#F4CE59',borderWidth:2,borderRadius:8,zIndex:1000,elevation:1000},
   playerDropdownOption:{paddingVertical:8,paddingHorizontal:10,borderBottomWidth:1,borderBottomColor:'#38456A'},
   playerDropdownOptionText:{color:'#FFFFFF',fontSize:12,fontWeight:'700'},
   gameDeckArea:{width:'100%',flex:1,alignItems:'center',justifyContent:'center',paddingVertical:4},
