@@ -37,6 +37,7 @@ const handCardImages = [
 type WelcomeAction = 'Create Game' | 'Join Game';
 type Screen = 'welcome' | 'lobby' | 'main-game';
 const characters = ['Boone', 'Ling Ling', 'Meemaw', 'Juby', 'Face', 'Bug', 'Theone', 'Beanz', 'Chicken Joe', 'Bob', 'Jayme', 'Trevor'];
+const playableCharacters = ['Boone', 'Ling Ling', 'Meemaw', 'Juby', 'Bug', 'Face', 'Theone', 'Beanz', 'Chicken Joe'];
 const characterPortraits: Record<string, any> = {
   'Boone': require('./assets/shared/characters/boone.png'),
   'Ling Ling': require('./assets/shared/characters/ling-ling.png'),
@@ -329,7 +330,7 @@ export default function App() {
                   <Text numberOfLines={1} style={styles.playerDropdownName}>{displayedPlayer}</Text>
                 </Pressable>
                 {playerDropdownOpen && <View style={styles.playerDropdownMenu}>
-                  {characters.map(character => <Pressable key={character} accessibilityRole="button" onPress={() => { setDisplayedPlayer(character); setPlayerDropdownOpen(false); }} style={styles.playerDropdownOption}><Text style={styles.playerDropdownOptionText}>{character}</Text></Pressable>)}
+                  {playableCharacters.map(character => <Pressable key={character} accessibilityRole="button" onPress={() => { setDisplayedPlayer(character); setPlayerDropdownOpen(false); }} style={styles.playerDropdownOption}><Text style={styles.playerDropdownOptionText}>{character}</Text></Pressable>)}
                 </View>}
               </View>
             </MovableItem>
@@ -435,7 +436,7 @@ const styles = StyleSheet.create({
   playersDropdownArtwork:{width:'100%',height:'100%'},
   playerDropdownButton:{width:'100%',height:'100%',justifyContent:'center'},
   playerDropdownName:{position:'absolute',left:'8%',right:'22%',textAlign:'center',color:'#FFF2B5',fontWeight:'900',fontSize:11,textShadowColor:'#000',textShadowRadius:3},
-  playerDropdownMenu:{position:'absolute',top:'100%',right:0,width:150,maxHeight:240,backgroundColor:'#101B40',borderColor:'#F4CE59',borderWidth:2,borderRadius:8,zIndex:100,elevation:20},
+  playerDropdownMenu:{position:'absolute',top:'100%',right:0,width:150,height:297,backgroundColor:'#101B40',borderColor:'#F4CE59',borderWidth:2,borderRadius:8,zIndex:100,elevation:20},
   playerDropdownOption:{paddingVertical:8,paddingHorizontal:10,borderBottomWidth:1,borderBottomColor:'#38456A'},
   playerDropdownOptionText:{color:'#FFFFFF',fontSize:12,fontWeight:'700'},
   gameDeckArea:{width:'100%',flex:1,alignItems:'center',justifyContent:'center',paddingVertical:4},
