@@ -70,11 +70,15 @@ const howToPlayText =
   '• The first player to get rid of all their cards wins, unless Final Showdown rules decide the result.';
 
 function MovableItem({ children, editMode, style, label, layoutId }: { children: React.ReactNode; editMode: boolean; style?: any; label: string; layoutId: string }) {
+  const storageKey = 'risk-the-win-layout-v2-' + layoutId;
   const [savedLayout, setSavedLayout] = useState(() => {
     try {
       if (Platform.OS === 'web' && typeof window !== 'undefined') {
-        const saved = window.localStorage.getItem('risk-the-win-layout-' + layoutId);
-        if (saved) return JSON.parse(saved);
+        const saved = window.localStorage.getItem(storageKey) || window.sessionStorage.getItem(storageKey);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.offset && Number.isFinite(parsed.offset.x) && Number.isFinite(parsed.offset.y) && Number.isFinite(parsed.scale)) return parsed;
+        }
       }
     } catch {}
     return { offset: { x: 0, y: 0 }, scale: 1 };
@@ -82,10 +86,13 @@ function MovableItem({ children, editMode, style, label, layoutId }: { children:
   const [offset, setOffset] = useState(savedLayout.offset);
   const [scale, setScale] = useState(savedLayout.scale);
   const saveLayout = (nextOffset: {x:number;y:number}, nextScale: number) => {
-    setSavedLayout({ offset: nextOffset, scale: nextScale });
+    const next = { offset: nextOffset, scale: nextScale };
+    setSavedLayout(next);
     try {
       if (Platform.OS === 'web' && typeof window !== 'undefined') {
-        window.localStorage.setItem('risk-the-win-layout-' + layoutId, JSON.stringify({ offset: nextOffset, scale: nextScale }));
+        const serialized = JSON.stringify(next);
+        window.localStorage.setItem(storageKey, serialized);
+        window.sessionStorage.setItem(storageKey, serialized);
       }
     } catch {}
   };
