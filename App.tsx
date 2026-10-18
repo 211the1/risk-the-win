@@ -90,8 +90,13 @@ function MovableItem({ children, editMode, style, label, layoutId }: { children:
   const [savedLayout, setSavedLayout] = useState(() => LAYOUT_DEFAULTS[layoutId] || { offset: { x: 0, y: 0 }, scale: 1 });
   const [offset, setOffset] = useState(savedLayout.offset);
   const [scale, setScale] = useState(savedLayout.scale);
-  // Preserve approved offsets exactly; only reduce item scale when the available viewport is smaller.
-  const deviceFitScale = Math.max(0.68, Math.min(1, deviceWidth / 390, deviceHeight / 680));
+  // Keep saved positions as the starting point, but constrain their movement to the current viewport.
+  // This prevents old desktop-sized offsets from pushing controls completely off a phone screen.
+  const responsiveOffset = {
+    x: Math.max(-deviceWidth * 0.22, Math.min(deviceWidth * 0.22, offset.x * Math.min(1, deviceWidth / 760))),
+    y: Math.max(-deviceHeight * 0.16, Math.min(deviceHeight * 0.16, offset.y * Math.min(1, deviceHeight / 900))),
+  };
+  const deviceFitScale = Math.max(0.62, Math.min(1, deviceWidth / 520, deviceHeight / 760));
   const fittedScale = scale * deviceFitScale;
   const saveLayout = (nextOffset: {x:number;y:number}, nextScale: number) => {
     const next = { offset: nextOffset, scale: nextScale };
@@ -117,7 +122,7 @@ function MovableItem({ children, editMode, style, label, layoutId }: { children:
     onPanResponderMove: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scaleRef.current); },
     onPanResponderRelease: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scaleRef.current); },
   })).current;
-  return <View {...pan.panHandlers} accessibilityLabel={label} style={[style, { maxWidth: '100%', transform: [{ translateX: offset.x }, { translateY: offset.y }, { scale: fittedScale }] }]}>
+  return <View {...pan.panHandlers} accessibilityLabel={label} style={[style, { maxWidth: '100%', transform: [{ translateX: responsiveOffset.x }, { translateY: responsiveOffset.y }, { scale: fittedScale }] }]}>
     {children}
     {editMode && <View style={styles.layoutItemControls}>
       <Pressable onPress={() => setScale(s => { const n = Number((s + 0.1).toFixed(2)); saveLayout(offset, n); return n; })} style={styles.layoutItemButton}><Text style={styles.layoutItemButtonText}>+</Text></Pressable>
