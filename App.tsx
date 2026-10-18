@@ -167,6 +167,12 @@ export default function App() {
   const buttonWidth = Math.min(menuWidth * 0.84, 440);
   const buttonHeight = Math.max(54, Math.min(buttonWidth * 0.235, 94));
   const settingsSize = Math.max(20, Math.min(width * 0.17, 84)) / 3;
+  // Each screen has its own settings-button sizing and placement so it can be fitted independently.
+  const settingsButtonLayout = screen === 'welcome'
+    ? { multiplier: 2, right: compact ? 22 : 36, top: compact ? 16 : 24 }
+    : screen === 'lobby'
+      ? { multiplier: 1, right: compact ? 18 : 30, top: compact ? 18 : 26 }
+      : { multiplier: 1, right: compact ? 18 : 30, top: compact ? 18 : 26 };
   const settingsPanelWidth = Math.min(width * 0.705, height * 0.615, 465);
 
   function generateRoomCode() {
@@ -378,7 +384,7 @@ export default function App() {
             <Text style={styles.gamePreviewNote}>SCREEN PREVIEW · MULTIPLAYER NOT CONNECTED</Text>
           </View>
         )}
-        <Pressable accessibilityRole="button" accessibilityLabel="Open Settings" onPress={() => { setHowToPlayOpen(false); setSettingsOpen(true); }} style={({pressed}) => [styles.settingsButton, { position: 'absolute', width: settingsSize * 2, height: settingsSize * 2, right: compact ? 22 : 36, top: compact ? 16 : 24, zIndex: 30, opacity: pressed ? 0.82 : 1 }]}><Image source={settingsImage} style={styles.settingsArtwork} resizeMode="contain" /></Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel="Open Settings" onPress={() => { setHowToPlayOpen(false); setSettingsOpen(true); }} style={({pressed}) => [styles.settingsButton, { position: 'absolute', width: settingsSize * settingsButtonLayout.multiplier, height: settingsSize * settingsButtonLayout.multiplier, right: settingsButtonLayout.right, top: settingsButtonLayout.top, zIndex: 30, opacity: pressed ? 0.82 : 1 }]}><Image source={settingsImage} style={styles.settingsArtwork} resizeMode="contain" /></Pressable>
         <Modal transparent visible={playerDropdownOpen && screen === 'main-game'} animationType="fade" statusBarTranslucent onRequestClose={() => setPlayerDropdownOpen(false)}>
           <Pressable accessibilityRole="button" accessibilityLabel="Close player menu" onPress={() => setPlayerDropdownOpen(false)} style={styles.playerDropdownModalBackdrop}>
             <View style={styles.playerDropdownModalMenu}>
