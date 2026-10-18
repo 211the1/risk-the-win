@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Alert, Image, ImageBackground, PanResponder, Platform, Pressable, ScrollView,
+  Alert, Image, ImageBackground, Modal, PanResponder, Platform, Pressable, ScrollView,
   StatusBar, StyleSheet, Text, TextInput, View, useWindowDimensions,
 } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
@@ -356,9 +356,7 @@ export default function App() {
                   <Image source={playersDropdownImage} style={styles.playersDropdownArtwork} resizeMode="contain" />
                   <Text numberOfLines={1} style={styles.playerDropdownName}>{displayedPlayer}</Text>
                 </Pressable>
-                {playerDropdownOpen && <View style={styles.playerDropdownMenu}>
-                  {playableCharacters.map(character => <Pressable key={character} accessibilityRole="button" onPress={() => { setDisplayedPlayer(character); setPlayerDropdownOpen(false); }} style={styles.playerDropdownOption}><Text style={styles.playerDropdownOptionText}>{character}</Text></Pressable>)}
-                </View>}
+
               </MovableItem>
             </View>
             <View style={styles.gameDeckArea}>
@@ -404,6 +402,13 @@ export default function App() {
             <Text style={styles.gamePreviewNote}>SCREEN PREVIEW · MULTIPLAYER NOT CONNECTED</Text>
           </View>
         )}
+        <Modal transparent visible={playerDropdownOpen && screen === 'main-game'} animationType="fade" statusBarTranslucent onRequestClose={() => setPlayerDropdownOpen(false)}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Close player menu" onPress={() => setPlayerDropdownOpen(false)} style={styles.playerDropdownModalBackdrop}>
+            <View style={styles.playerDropdownModalMenu}>
+              {playableCharacters.map(character => <Pressable key={character} accessibilityRole="button" onPress={() => { setDisplayedPlayer(character); setPlayerDropdownOpen(false); }} style={styles.playerDropdownOption}><Text style={styles.playerDropdownOptionText}>{character}</Text></Pressable>)}
+            </View>
+          </Pressable>
+        </Modal>
         {settingsOpen && !howToPlayOpen && screen === 'welcome' && (
           <View style={styles.settingsOverlay}>
             <Pressable accessibilityRole="button" accessibilityLabel="Close settings" onPress={() => setSettingsOpen(false)} style={styles.dismissArea} />
@@ -464,7 +469,8 @@ const styles = StyleSheet.create({
   playersDropdownArtwork:{width:'100%',height:'100%'},
   playerDropdownButton:{width:'100%',height:'100%',justifyContent:'center'},
   playerDropdownName:{position:'absolute',left:'8%',right:'22%',textAlign:'center',color:'#FFF2B5',fontWeight:'900',fontSize:11,textShadowColor:'#000',textShadowRadius:3},
-  playerDropdownMenu:{position:'absolute',top:'100%',right:0,width:150,height:297,backgroundColor:'#101B40',borderColor:'#F4CE59',borderWidth:2,borderRadius:8,zIndex:1000,elevation:1000},
+  playerDropdownModalBackdrop:{flex:1,backgroundColor:'rgba(0,0,0,0.12)',alignItems:'flex-end',paddingTop:105,paddingRight:10},
+  playerDropdownModalMenu:{width:150,maxHeight:'70%',backgroundColor:'#101B40',borderColor:'#F4CE59',borderWidth:2,borderRadius:8,zIndex:10000,elevation:10000,overflow:'hidden'},
   playerDropdownOption:{paddingVertical:8,paddingHorizontal:10,borderBottomWidth:1,borderBottomColor:'#38456A'},
   playerDropdownOptionText:{color:'#FFFFFF',fontSize:12,fontWeight:'700'},
   gameDeckArea:{width:'100%',flex:1,alignItems:'center',justifyContent:'center',paddingVertical:4},
