@@ -381,6 +381,7 @@ export default function App() {
             <Text style={styles.gamePreviewNote}>SCREEN PREVIEW · MULTIPLAYER NOT CONNECTED</Text>
           </View>
         )}
+        {screen !== 'welcome' && <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => setSettingsOpen(true)} style={({pressed}) => [styles.settingsButton, { position: 'absolute', width: settingsSize, height: settingsSize, right: compact ? 22 : 36, top: compact ? 24 : 32, zIndex: 30, opacity: pressed ? 0.82 : 1 }]}><Image source={settingsImage} style={styles.settingsArtwork} resizeMode="contain" /></Pressable>}
         <Modal transparent visible={playerDropdownOpen && screen === 'main-game'} animationType="fade" statusBarTranslucent onRequestClose={() => setPlayerDropdownOpen(false)}>
           <Pressable accessibilityRole="button" accessibilityLabel="Close player menu" onPress={() => setPlayerDropdownOpen(false)} style={styles.playerDropdownModalBackdrop}>
             <View style={styles.playerDropdownModalMenu}>
@@ -388,7 +389,7 @@ export default function App() {
             </View>
           </Pressable>
         </Modal>
-        {settingsOpen && !howToPlayOpen && screen === 'welcome' && (
+        {settingsOpen && !howToPlayOpen && (
           <View style={styles.settingsOverlay}>
             <Pressable accessibilityRole="button" accessibilityLabel="Close settings" onPress={() => setSettingsOpen(false)} style={styles.dismissArea} />
             <View style={[styles.settingsPanel,{width:settingsPanelWidth,height:settingsPanelWidth*(1311/1279)}]}>
@@ -400,7 +401,7 @@ export default function App() {
             </View>
           </View>
         )}
-        {howToPlayOpen && screen === 'welcome' && (
+        {howToPlayOpen && (
           <View style={styles.howToPlayOverlay}>
             <Pressable accessibilityRole="button" accessibilityLabel="Close How to Play" onPress={()=>setHowToPlayOpen(false)} style={styles.howToPlayBackdrop} />
             <View style={[styles.howToPlayArtworkPanel,{width:Math.min(width*0.94,height*0.82*(2/3),600),height:Math.min(width*0.94,height*0.82*(2/3),600)*1.5}]}>
