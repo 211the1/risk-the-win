@@ -358,24 +358,18 @@ export default function App() {
               <MovableItem editMode={layoutEditMode} label="Move and resize Draw button" layoutId="button-draw" style={styles.gameActionButton}><Pressable accessibilityRole="button" accessibilityLabel="Draw card" onPress={() => { const next = handCardImages[(handCards.length + 3) % handCardImages.length]; setHandCards(cards => [...cards, next]); }} style={styles.gameActionButton}><Image source={drawButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable></MovableItem>
               <MovableItem editMode={layoutEditMode} label="Move and resize Push-to-Talk button" layoutId="button-talk" style={styles.gameActionButton}><Pressable accessibilityRole="button" accessibilityLabel="Push to talk" onPress={() => showMessage('Push-to-Talk', 'The button artwork is connected. Voice communication will be implemented later.')} style={styles.gameActionButton}><Image source={talkButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable></MovableItem>
             </View>
-            <View style={[styles.playerHandFan, { transform: [{ translateX: handOffset.x }, { translateY: handOffset.y }, { scale: handScale }] }]} accessibilityLabel={`Your hand of ${handCards.length} individually adjustable cards.`}>
+            <MovableItem editMode={layoutEditMode} label="Move and resize entire fan of hand cards" layoutId="hand-fan" style={styles.playerHandFan}>
               {handCards.map((cardImage, index) => {
                 const center = (handCards.length - 1) / 2;
                 const distance = index - center;
                 const normalized = center ? Math.abs(distance) / center : 0;
                 const angle = distance * 7;
                 const curveLift = normalized * normalized * 34;
-                return <MovableItem key={`hand-card-${index}`} editMode={layoutEditMode} label={`Move and resize hand card ${index + 1}`} layoutId={`hand-card-${index}`} style={[styles.playerHandCardTouch, { left: handCards.length > 1 ? `${(index / (handCards.length - 1)) * 78}%` : '39%', zIndex: selectedHandCard === index ? 20 : index + 1, transform: [{ translateY: -curveLift + (selectedHandCard === index ? -18 : 0) }, { rotate: `${angle}deg` }] }]}>
-                  <Pressable accessibilityRole="button" accessibilityLabel={`Select card ${index + 1}`} onPress={() => setSelectedHandCard(index)} style={{width:'100%',height:'100%'}}>
-                    <Image source={cardImage} resizeMode="contain" style={styles.playerHandCard} />
-                  </Pressable>
-                </MovableItem>;
+                return <Pressable key={`hand-card-${index}`} accessibilityRole="button" accessibilityLabel={`Select card ${index + 1}`} onPress={() => setSelectedHandCard(index)} style={[styles.playerHandCardTouch, { left: handCards.length > 1 ? `${(index / (handCards.length - 1)) * 78}%` : '39%', zIndex: selectedHandCard === index ? 20 : index + 1, transform: [{ translateY: -curveLift + (selectedHandCard === index ? -18 : 0) }, { rotate: `${angle}deg` }] }]}>
+                  <Image source={cardImage} resizeMode="contain" style={styles.playerHandCard} />
+                </Pressable>;
               })}
-              <View style={styles.handZoomControls}>
-                <Pressable accessibilityRole="button" accessibilityLabel="Make cards bigger" onPress={() => setHandScale(scale => Math.min(1.8, Number((scale + 0.1).toFixed(2))))} style={styles.handZoomButton}><Text style={styles.handZoomText}>+</Text></Pressable>
-                <Pressable accessibilityRole="button" accessibilityLabel="Make cards smaller" onPress={() => setHandScale(scale => Math.max(0.6, Number((scale - 0.1).toFixed(2))))} style={styles.handZoomButton}><Text style={styles.handZoomText}>−</Text></Pressable>
-              </View>
-            </View>
+            </MovableItem>
             {gameLogoVisible && <MovableItem editMode={layoutEditMode} label="Move and resize game logo" layoutId="logo" style={styles.gameLogoPosition}>
               <Image source={riskLogoImage} resizeMode="contain" style={styles.gameLogoArtwork} />
             </MovableItem>}
