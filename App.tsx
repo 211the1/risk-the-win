@@ -117,7 +117,7 @@ export default function App() {
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
   const [soundEffectsOn, setSoundEffectsOn] = useState(true);
   const [backgroundMusicOn, setBackgroundMusicOn] = useState(true);
-  const [layoutEditMode] = useState(false);
+  const [layoutEditMode, setLayoutEditMode] = useState(true);
   const [playerDropdownOpen, setPlayerDropdownOpen] = useState(false);
   const [displayedPlayer, setDisplayedPlayer] = useState('Boone');
   const [gameLogoVisible, setGameLogoVisible] = useState(true);
@@ -370,6 +370,9 @@ export default function App() {
                 <Image source={topCharacter} resizeMode="cover" style={styles.topCharacterPortrait} />
               </View>
             </MovableItem>
+            <Pressable accessibilityRole="button" accessibilityLabel={layoutEditMode ? "Lock screen layout" : "Edit screen layout"} onPress={() => setLayoutEditMode(value => !value)} style={styles.layoutModeButton}>
+              <Text style={styles.layoutModeButtonText}>{layoutEditMode ? "LOCK LAYOUT" : "EDIT LAYOUT"}</Text>
+            </Pressable>
             <Text style={styles.gamePreviewNote}>SCREEN PREVIEW · MULTIPLAYER NOT CONNECTED</Text>
           </View>
         )}
