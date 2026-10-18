@@ -343,14 +343,16 @@ export default function App() {
                 </View>}
               </MovableItem>
             </View>
-            <MovableItem editMode={layoutEditMode} label="Move and resize decks" layoutId="decks" style={styles.gameDeckArea}>
-              <Pressable accessibilityRole="button" accessibilityLabel="Play selected card to discard pile" onPress={() => { if (selectedHandCard === null) { showMessage('Choose a card', 'Tap a card in your hand first, then tap the discard pile to play it.'); return; } const played = handCards[selectedHandCard]; setTopDiscardCard(played); setHandCards(cards => cards.filter((_, index) => index !== selectedHandCard)); setSelectedHandCard(null); }} style={styles.gameDeckTouch}>
-                <Image source={drawDiscardDecksImage} style={styles.gameDecksArtwork} resizeMode="contain" />
-              </Pressable>
-              <MovableItem editMode={layoutEditMode} label="Move and resize top discard card" layoutId="top-discard-card" style={styles.discardTopCardMovable}>
+            <View style={styles.gameDeckArea}>
+              <MovableItem editMode={layoutEditMode} label="Move and resize draw and discard decks together" layoutId="decks" style={styles.gameDeckTouch}>
+                <Pressable accessibilityRole="button" accessibilityLabel="Play selected card to discard pile" onPress={() => { if (selectedHandCard === null) { showMessage('Choose a card', 'Tap a card in your hand first, then tap the discard pile to play it.'); return; } const played = handCards[selectedHandCard]; setTopDiscardCard(played); setHandCards(cards => cards.filter((_, index) => index !== selectedHandCard)); setSelectedHandCard(null); }} style={styles.gameDeckTouch}>
+                  <Image source={drawDiscardDecksImage} style={styles.gameDecksArtwork} resizeMode="contain" />
+                </Pressable>
+              </MovableItem>
+              <MovableItem editMode={layoutEditMode} label="Move and resize top discard character card independently" layoutId="top-discard-card" style={styles.discardTopCardMovable}>
                 <Image source={topDiscardCard} style={styles.discardTopCardArtwork} resizeMode="contain" />
               </MovableItem>
-            </MovableItem>
+            </View>
             <View style={styles.gameBottomButtons}>
               <MovableItem editMode={layoutEditMode} label="Move and resize Wake Up button" layoutId="button-wake-up" style={styles.gameActionButton}><Pressable accessibilityRole="button" accessibilityLabel="Wake Up" onPress={() => showMessage('Wake Up', 'The button artwork is connected. Its in-game action will be added later.')} style={styles.gameActionButton}><Image source={wakeUpButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable></MovableItem>
               <MovableItem editMode={layoutEditMode} label="Move and resize Emoji button" layoutId="button-emoji" style={styles.gameActionButton}><Pressable accessibilityRole="button" accessibilityLabel="Emoji" onPress={() => showMessage('Emoji', 'The button artwork is connected. Emoji actions will be added later.')} style={styles.gameActionButton}><Image source={emojiButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable></MovableItem>
