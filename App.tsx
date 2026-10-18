@@ -232,9 +232,6 @@ export default function App() {
                   <Image source={joinGameImage} style={styles.buttonArtwork} resizeMode="contain" />
                 </Pressable>
               </View>
-              <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => setSettingsOpen(true)} style={({pressed}) => [styles.settingsButton,{width:settingsSize,height:settingsSize,right:compact?22:36,top:compact?24:32,opacity:pressed?0.82:1}]}>
-                <Image source={settingsImage} style={styles.settingsArtwork} resizeMode="contain" />
-              </Pressable>
             </View>
           </View>
         ) : screen === 'lobby' ? (
@@ -381,7 +378,7 @@ export default function App() {
             <Text style={styles.gamePreviewNote}>SCREEN PREVIEW · MULTIPLAYER NOT CONNECTED</Text>
           </View>
         )}
-        {screen !== 'welcome' && <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => setSettingsOpen(true)} style={({pressed}) => [styles.settingsButton, { position: 'absolute', width: settingsSize, height: settingsSize, right: compact ? 22 : 36, top: compact ? 24 : 32, zIndex: 30, opacity: pressed ? 0.82 : 1 }]}><Image source={settingsImage} style={styles.settingsArtwork} resizeMode="contain" /></Pressable>}
+        <Pressable accessibilityRole="button" accessibilityLabel="Open Settings" onPress={() => { setHowToPlayOpen(false); setSettingsOpen(true); }} style={({pressed}) => [styles.settingsButton, { position: 'absolute', width: settingsSize, height: settingsSize, right: compact ? 22 : 36, top: compact ? 24 : 32, zIndex: 30, opacity: pressed ? 0.82 : 1 }]}><Image source={settingsImage} style={styles.settingsArtwork} resizeMode="contain" /></Pressable>
         <Modal transparent visible={playerDropdownOpen && screen === 'main-game'} animationType="fade" statusBarTranslucent onRequestClose={() => setPlayerDropdownOpen(false)}>
           <Pressable accessibilityRole="button" accessibilityLabel="Close player menu" onPress={() => setPlayerDropdownOpen(false)} style={styles.playerDropdownModalBackdrop}>
             <View style={styles.playerDropdownModalMenu}>
