@@ -346,8 +346,10 @@ export default function App() {
             <MovableItem editMode={layoutEditMode} label="Move and resize decks" layoutId="decks" style={styles.gameDeckArea}>
               <Pressable accessibilityRole="button" accessibilityLabel="Play selected card to discard pile" onPress={() => { if (selectedHandCard === null) { showMessage('Choose a card', 'Tap a card in your hand first, then tap the discard pile to play it.'); return; } const played = handCards[selectedHandCard]; setTopDiscardCard(played); setHandCards(cards => cards.filter((_, index) => index !== selectedHandCard)); setSelectedHandCard(null); }} style={styles.gameDeckTouch}>
                 <Image source={drawDiscardDecksImage} style={styles.gameDecksArtwork} resizeMode="contain" />
-                <Image source={topDiscardCard} style={styles.discardTopCard} resizeMode="contain" />
               </Pressable>
+              <MovableItem editMode={layoutEditMode} label="Move and resize top discard card" layoutId="top-discard-card" style={styles.discardTopCardMovable}>
+                <Image source={topDiscardCard} style={styles.discardTopCardArtwork} resizeMode="contain" />
+              </MovableItem>
             </MovableItem>
             <View style={styles.gameBottomButtons}>
               <MovableItem editMode={layoutEditMode} label="Move and resize Wake Up button" layoutId="button-wake-up" style={styles.gameActionButton}><Pressable accessibilityRole="button" accessibilityLabel="Wake Up" onPress={() => showMessage('Wake Up', 'The button artwork is connected. Its in-game action will be added later.')} style={styles.gameActionButton}><Image source={wakeUpButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable></MovableItem>
@@ -457,8 +459,10 @@ const styles = StyleSheet.create({
   gameDeckLabels:{color:'#FFF0C3',fontWeight:'900',fontSize:10,textAlign:'center',letterSpacing:1,marginTop:2,textShadowColor:'#000',textShadowRadius:4},
   gameDeckCount:{color:'#FFFFFF',fontWeight:'800',fontSize:9,marginTop:3,textShadowColor:'#000',textShadowRadius:4},
   gameBottomButtons:{width:'100%',maxWidth:760,flexDirection:'row',alignItems:'center',justifyContent:'space-evenly',gap:4,minHeight:76,maxHeight:112},
-  gameActionButton:{flex:1,height:'100%',minWidth:0,alignItems:'center',justifyContent:'center'},
-  gameActionArtwork:{width:'100%',height:'100%'},
+  gameActionButton:{flex:1,height:96,minWidth:44,alignItems:'center',justifyContent:'center',overflow:'visible'},
+  gameActionArtwork:{width:'100%',height:96,minWidth:44},
+  discardTopCardMovable:{position:'absolute',left:'48%',top:'0%',width:'35.19%',height:'70.38%',zIndex:30},
+  discardTopCardArtwork:{width:'100%',height:'100%'},
   playerHandFan:{position:'absolute',left:'17%',bottom:'7%',width:'66%',height:'23%',zIndex:10},
   playerHandCardTouch:{position:'absolute',bottom:0,width:'22%',height:'88%'},
   playerHandCard:{width:'100%',height:'100%',borderRadius:5},
