@@ -90,13 +90,13 @@ function MovableItem({ children, editMode, style, label, layoutId }: { children:
   const [savedLayout, setSavedLayout] = useState(() => LAYOUT_DEFAULTS[layoutId] || { offset: { x: 0, y: 0 }, scale: 1 });
   const [offset, setOffset] = useState(savedLayout.offset);
   const [scale, setScale] = useState(savedLayout.scale);
-  // Keep saved positions as the starting point, but constrain their movement to the current viewport.
-  // This prevents old desktop-sized offsets from pushing controls completely off a phone screen.
+  // Use a single responsive scale for both saved nudges and item size.
+  // Bound the nudges so a saved desktop layout cannot push buttons off a phone.
+  const deviceFitScale = Math.max(0.5, Math.min(1, deviceWidth / 760, deviceHeight / 900));
   const responsiveOffset = {
-    x: Math.max(-deviceWidth * 0.22, Math.min(deviceWidth * 0.22, offset.x * Math.min(1, deviceWidth / 760))),
-    y: Math.max(-deviceHeight * 0.16, Math.min(deviceHeight * 0.16, offset.y * Math.min(1, deviceHeight / 900))),
+    x: Math.max(-deviceWidth * 0.18, Math.min(deviceWidth * 0.18, offset.x * deviceFitScale)),
+    y: Math.max(-deviceHeight * 0.14, Math.min(deviceHeight * 0.14, offset.y * deviceFitScale)),
   };
-  const deviceFitScale = Math.max(0.62, Math.min(1, deviceWidth / 520, deviceHeight / 760));
   const fittedScale = scale * deviceFitScale;
   const saveLayout = (nextOffset: {x:number;y:number}, nextScale: number) => {
     const next = { offset: nextOffset, scale: nextScale };
