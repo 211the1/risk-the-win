@@ -393,9 +393,6 @@ export default function App() {
                 })}
               </View>
             </MovableItem>
-            {gameLogoVisible && <MovableItem editMode={layoutEditMode} label="Move and resize game logo" layoutId="logo" style={styles.gameLogoPosition}>
-              <Image source={riskLogoImage} resizeMode="contain" style={styles.gameLogoArtwork} />
-            </MovableItem>}
             <MovableItem editMode={layoutEditMode} label="Move and resize random character portrait" layoutId="character-portrait" style={styles.topCharacterPosition}>
               <View style={styles.goldCharacterRing}>
                 <Image source={topCharacter} resizeMode="cover" style={styles.topCharacterPortrait} />
