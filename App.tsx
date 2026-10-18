@@ -34,7 +34,8 @@ const handCardImages = [
   require('./assets/screens/main-game/cards/characters/chicken-joe-yellow.png'),
 ];
 
-const LAYOUT_EDITING_ENABLED = false; // Layout is fixed for normal gameplay.\nconst LAYOUT_DEFAULTS: Record<string, { offset: { x: number; y: number }; scale: number }> = {
+const LAYOUT_EDITING_ENABLED = false; // Layout is fixed for normal gameplay.
+const LAYOUT_DEFAULTS: Record<string, { offset: { x: number; y: number }; scale: number }> = {
   'button-draw': { offset: { x: -269, y: -134 }, scale: 1.7 },
   'button-emoji': { offset: { x: -12, y: -495 }, scale: 1.3 },
   'button-sort': { offset: { x: 159, y: -131 }, scale: 1.7 },
