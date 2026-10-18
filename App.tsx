@@ -112,8 +112,8 @@ function MovableItem({ children, editMode, style, label, layoutId }: { children:
   return <View {...pan.panHandlers} accessibilityLabel={label} style={[style, { transform: [{ translateX: offset.x }, { translateY: offset.y }, { scale }] }]}>
     {children}
     {editMode && <View style={styles.layoutItemControls}>
-      <Pressable onPress={() => setScale(s => { const n = Math.min(2, Number((s + 0.1).toFixed(2))); saveLayout(offset, n); return n; })} style={styles.layoutItemButton}><Text style={styles.layoutItemButtonText}>+</Text></Pressable>
-      <Pressable onPress={() => setScale(s => { const n = Math.max(0.5, Number((s - 0.1).toFixed(2))); saveLayout(offset, n); return n; })} style={styles.layoutItemButton}><Text style={styles.layoutItemButtonText}>−</Text></Pressable>
+      <Pressable onPress={() => setScale(s => { const n = Number((s + 0.1).toFixed(2)); saveLayout(offset, n); return n; })} style={styles.layoutItemButton}><Text style={styles.layoutItemButtonText}>+</Text></Pressable>
+      <Pressable onPress={() => setScale(s => { const n = Math.max(0.05, Number((s - 0.1).toFixed(2))); saveLayout(offset, n); return n; })} style={styles.layoutItemButton}><Text style={styles.layoutItemButtonText}>−</Text></Pressable>
     </View>}
   </View>;
 }
