@@ -461,7 +461,7 @@ const styles = StyleSheet.create({
   playerHandFan:{position:'absolute',left:'17%',bottom:'7%',width:'66%',height:'23%',zIndex:10,overflow:'visible'},
   playerHandScroll:{width:'100%',height:'100%'},
   playerHandScrollContent:{alignItems:'flex-end',paddingHorizontal:5,gap:8},
-  playerHandScrollCard:{width:Math.max(72,Math.min(110, width*0.2)),height:'96%',alignSelf:'flex-end',marginBottom:0},
+  playerHandScrollCard:{width:90,height:'96%',alignSelf:'flex-end',marginBottom:0},
   playerHandScrollCardSelected:{transform:[{translateY:-12}],borderWidth:2,borderColor:'#F4CE59',borderRadius:6},
   playerHandCard:{width:'100%',height:'100%',borderRadius:5},
   handZoomControls:{position:'absolute',right:0,bottom:0,flexDirection:'row',gap:5,zIndex:30},
