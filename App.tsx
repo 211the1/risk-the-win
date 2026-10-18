@@ -34,7 +34,19 @@ const handCardImages = [
   require('./assets/screens/main-game/cards/characters/chicken-joe-yellow.png'),
 ];
 
-const LAYOUT_EDITING_ENABLED = false; // Set to true in App.tsx when you want to edit the layout again.
+const LAYOUT_EDITING_ENABLED = false; // Layout is fixed for normal gameplay.\nconst LAYOUT_DEFAULTS: Record<string, { offset: { x: number; y: number }; scale: number }> = {
+  'button-draw': { offset: { x: -269, y: -134 }, scale: 1.7 },
+  'button-emoji': { offset: { x: -12, y: -495 }, scale: 1.3 },
+  'button-sort': { offset: { x: 159, y: -131 }, scale: 1.7 },
+  'button-talk': { offset: { x: 5, y: -341 }, scale: 1.4 },
+  'button-wake-up': { offset: { x: -19, y: -344 }, scale: 1.5 },
+  'character-portrait': { offset: { x: -172, y: 47 }, scale: 1.2 },
+  'decks': { offset: { x: -5, y: 95 }, scale: 2.6 },
+  'hand-fan': { offset: { x: -1, y: 30 }, scale: 1 },
+  'lobby-button': { offset: { x: -9, y: -15 }, scale: 0.8 },
+  'player-dropdown': { offset: { x: 9, y: -20 }, scale: 1 },
+  'top-discard-card': { offset: { x: -18, y: 124 }, scale: 0.5 },
+};
 
 type WelcomeAction = 'Create Game' | 'Join Game';
 type Screen = 'welcome' | 'lobby' | 'main-game';
@@ -73,18 +85,7 @@ const howToPlayText =
 
 function MovableItem({ children, editMode, style, label, layoutId }: { children: React.ReactNode; editMode: boolean; style?: any; label: string; layoutId: string }) {
   const storageKey = 'risk-the-win-layout-v2-' + layoutId;
-  const [savedLayout, setSavedLayout] = useState(() => {
-    try {
-      if (Platform.OS === 'web' && typeof window !== 'undefined') {
-        const saved = window.localStorage.getItem(storageKey) || window.sessionStorage.getItem(storageKey);
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed && parsed.offset && Number.isFinite(parsed.offset.x) && Number.isFinite(parsed.offset.y) && Number.isFinite(parsed.scale)) return parsed;
-        }
-      }
-    } catch {}
-    return { offset: { x: 0, y: 0 }, scale: 1 };
-  });
+  const [savedLayout, setSavedLayout] = useState(() => LAYOUT_DEFAULTS[layoutId] || { offset: { x: 0, y: 0 }, scale: 1 });
   const [offset, setOffset] = useState(savedLayout.offset);
   const [scale, setScale] = useState(savedLayout.scale);
   const saveLayout = (nextOffset: {x:number;y:number}, nextScale: number) => {
@@ -128,23 +129,6 @@ export default function App() {
   const [soundEffectsOn, setSoundEffectsOn] = useState(true);
   const [backgroundMusicOn, setBackgroundMusicOn] = useState(true);
   const [layoutEditMode, setLayoutEditMode] = useState(LAYOUT_EDITING_ENABLED);
-  const [layoutExportText, setLayoutExportText] = useState('');
-  const [layoutExportOpen, setLayoutExportOpen] = useState(false);
-  function exportSavedLayout() {
-    const ids = ['lobby-button', 'player-dropdown', 'decks', 'top-discard-card', 'button-wake-up', 'button-emoji', 'button-sort', 'button-draw', 'button-talk', 'hand-fan', 'character-portrait'];
-    const exported: Record<string, unknown> = {};
-    try {
-      if (Platform.OS === 'web' && typeof window !== 'undefined') {
-        ids.forEach(id => {
-          const key = 'risk-the-win-layout-v2-' + id;
-          const saved = window.localStorage.getItem(key) || window.sessionStorage.getItem(key);
-          if (saved) exported[id] = JSON.parse(saved);
-        });
-      }
-    } catch {}
-    setLayoutExportText(JSON.stringify(exported, null, 2));
-    setLayoutExportOpen(true);
-  }
   const [playerDropdownOpen, setPlayerDropdownOpen] = useState(false);
   const [displayedPlayer, setDisplayedPlayer] = useState('Boone');
   const [gameLogoVisible, setGameLogoVisible] = useState(true);
@@ -393,23 +377,9 @@ export default function App() {
             {LAYOUT_EDITING_ENABLED && <Pressable accessibilityRole="button" accessibilityLabel={layoutEditMode ? "Lock screen layout" : "Edit screen layout"} onPress={() => setLayoutEditMode(value => !value)} style={styles.layoutModeButton}>
               <Text style={styles.layoutModeButtonText}>{layoutEditMode ? "LOCK LAYOUT" : "EDIT LAYOUT"}</Text>
             </Pressable>}
-            <Pressable accessibilityRole="button" accessibilityLabel="Export saved layout positions" onPress={exportSavedLayout} style={styles.exportLayoutButton}>
-              <Text style={styles.layoutModeButtonText}>EXPORT LAYOUT</Text>
-            </Pressable>
             <Text style={styles.gamePreviewNote}>SCREEN PREVIEW · MULTIPLAYER NOT CONNECTED</Text>
           </View>
         )}
-        <Modal transparent visible={layoutExportOpen} animationType="fade" onRequestClose={() => setLayoutExportOpen(false)}>
-          <View style={styles.layoutExportBackdrop}>
-            <View style={styles.layoutExportPanel}>
-              <Text style={styles.layoutExportTitle}>Saved Layout Export</Text>
-              <Text style={styles.layoutExportInstructions}>Copy all the text below and send it back here. If it is empty, the saved positions may be stored in a different browser session.</Text>
-              <TextInput value={layoutExportText} editable={false} multiline selectTextOnFocus style={styles.layoutExportInput} />
-              <Pressable accessibilityRole="button" onPress={() => { if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard?.writeText) { navigator.clipboard.writeText(layoutExportText).then(() => showMessage('Copied', 'The layout export is copied. Paste it into this chat.')).catch(() => showMessage('Copy needed', 'Select the text above, copy it, and paste it into this chat.')); } else { showMessage('Copy needed', 'Select the text above, copy it, and paste it into this chat.'); } }} style={styles.layoutExportCopyButton}><Text style={styles.layoutModeButtonText}>COPY LAYOUT</Text></Pressable>
-              <Pressable accessibilityRole="button" onPress={() => setLayoutExportOpen(false)} style={styles.layoutExportCloseButton}><Text style={styles.layoutModeButtonText}>CLOSE</Text></Pressable>
-            </View>
-          </View>
-        </Modal>
         <Modal transparent visible={playerDropdownOpen && screen === 'main-game'} animationType="fade" statusBarTranslucent onRequestClose={() => setPlayerDropdownOpen(false)}>
           <Pressable accessibilityRole="button" accessibilityLabel="Close player menu" onPress={() => setPlayerDropdownOpen(false)} style={styles.playerDropdownModalBackdrop}>
             <View style={styles.playerDropdownModalMenu}>
@@ -462,14 +432,6 @@ const styles = StyleSheet.create({
   goldCharacterRing:{width:'100%',height:'100%',borderRadius:48,borderWidth:4,borderColor:'#F4CE59',backgroundColor:'#10234F',padding:4,alignItems:'center',justifyContent:'center',overflow:'hidden',shadowColor:'#000',shadowOpacity:0.6,shadowRadius:5,elevation:7},
   topCharacterPortrait:{width:'100%',height:'100%',borderRadius:40},
   layoutModeButton:{position:'absolute',right:8,top:8,zIndex:50,paddingHorizontal:10,paddingVertical:7,borderRadius:8,borderWidth:2,borderColor:'#F4CE59',backgroundColor:'#10234F'},
-  exportLayoutButton:{position:'absolute',right:8,top:42,zIndex:90,paddingHorizontal:10,paddingVertical:7,borderRadius:8,borderWidth:2,borderColor:'#F4CE59',backgroundColor:'#10234F'},
-  layoutExportBackdrop:{flex:1,backgroundColor:'rgba(0,0,0,0.78)',alignItems:'center',justifyContent:'center',padding:18},
-  layoutExportPanel:{width:'100%',maxWidth:620,maxHeight:'88%',backgroundColor:'#101B40',borderColor:'#F4CE59',borderWidth:2,borderRadius:12,padding:14,gap:10},
-  layoutExportTitle:{color:'#FFF2B5',fontSize:18,fontWeight:'900'},
-  layoutExportInstructions:{color:'#FFFFFF',fontSize:12},
-  layoutExportInput:{height:260,backgroundColor:'#071326',color:'#FFFFFF',borderWidth:1,borderColor:'#6D7B99',padding:8,textAlignVertical:'top',fontSize:11},
-  layoutExportCopyButton:{alignItems:'center',padding:10,borderRadius:8,borderWidth:1,borderColor:'#F4CE59',backgroundColor:'#17335B'},
-  layoutExportCloseButton:{alignItems:'center',padding:10,borderRadius:8,borderWidth:1,borderColor:'#F4CE59',backgroundColor:'#30384D'},
   layoutModeButtonText:{color:'#FFF2B5',fontSize:10,fontWeight:'900'},
   layoutItemControls:{position:'absolute',right:0,top:0,zIndex:60,flexDirection:'row',gap:3},
   layoutItemButton:{width:25,height:25,alignItems:'center',justifyContent:'center',borderRadius:13,borderWidth:1,borderColor:'#F4CE59',backgroundColor:'#10234F'},
