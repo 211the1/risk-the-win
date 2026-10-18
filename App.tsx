@@ -138,24 +138,7 @@ export default function App() {
   const [topCharacter] = useState(() => characterPortraits[characters[Math.floor(Math.random() * characters.length)]]);
   const [handCards, setHandCards] = useState(handCardImages);
   const [selectedHandCard, setSelectedHandCard] = useState<number | null>(null);
-  const [browsedHandCard, setBrowsedHandCard] = useState<number>(0);
-  const [fanSpread, setFanSpread] = useState(1);
-  const fanGestureStart = useRef({ x: 0, y: 0, spread: 1, browsed: 0 });
-  const fanGestureResponder = useRef(PanResponder.create({
-    onStartShouldSetPanResponder: () => false,
-    onMoveShouldSetPanResponder: (_, g) => !layoutEditMode && (Math.abs(g.dx) > 8 || Math.abs(g.dy) > 8),
-    onPanResponderGrant: () => { fanGestureStart.current = { x: 0, y: 0, spread: fanSpread, browsed: browsedHandCard }; },
-    onPanResponderMove: (_, g) => {
-      const maxIndex = Math.max(0, handCards.length - 1);
-      if (Math.abs(g.dx) > Math.abs(g.dy)) {
-        const step = Math.trunc(-g.dx / 42);
-        setBrowsedHandCard(Math.max(0, Math.min(maxIndex, fanGestureStart.current.browsed + step)));
-      } else {
-        setFanSpread(Math.max(0.45, Math.min(1.8, fanGestureStart.current.spread + (-g.dy / 170))));
-      }
-    },
-    onPanResponderRelease: () => {},
-  })).current;
+  const [handScrollX, setHandScrollX] = useState(0);
   const [topDiscardCard, setTopDiscardCard] = useState(discardTopCardImage);
   const [handOffset, setHandOffset] = useState({ x: 0, y: 0 });
   const [handScale, setHandScale] = useState(1);
@@ -376,20 +359,12 @@ export default function App() {
               <MovableItem editMode={layoutEditMode} label="Move and resize Draw button" layoutId="button-draw" style={styles.gameActionButton}><Pressable accessibilityRole="button" accessibilityLabel="Draw card" onPress={() => { const next = handCardImages[(handCards.length + 3) % handCardImages.length]; setHandCards(cards => [...cards, next]); }} style={styles.gameActionButton}><Image source={drawButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable></MovableItem>
               <MovableItem editMode={layoutEditMode} label="Move and resize Push-to-Talk button" layoutId="button-talk" style={styles.gameActionButton}><Pressable accessibilityRole="button" accessibilityLabel="Push to talk" onPress={() => showMessage('Push-to-Talk', 'The button artwork is connected. Voice communication will be implemented later.')} style={styles.gameActionButton}><Image source={talkButtonImage} style={styles.gameActionArtwork} resizeMode="contain" /></Pressable></MovableItem>
             </View>
-            <MovableItem editMode={layoutEditMode} label="Move and resize entire fan of hand cards" layoutId="hand-fan" style={styles.playerHandFan}>
-              <View style={styles.playerHandFanInner} {...fanGestureResponder.panHandlers}>
-                {handCards.map((cardImage, index) => {
-                  const center = (handCards.length - 1) / 2;
-                  const distance = index - center;
-                  const normalized = center ? Math.abs(distance) / center : 0;
-                  const angle = distance * 7 * fanSpread;
-                  const curveLift = normalized * normalized * 34 * fanSpread;
-                  const browseLift = index === browsedHandCard && selectedHandCard !== index ? -10 : 0;
-                  return <Pressable key={`hand-card-${index}`} accessibilityRole="button" accessibilityLabel={`Select card ${index + 1}`} onPress={() => setSelectedHandCard(index)} style={[styles.playerHandCardTouch, { left: handCards.length > 1 ? `${(index / (handCards.length - 1)) * 78 * fanSpread + (1 - fanSpread) * 39}%` : '39%', zIndex: selectedHandCard === index ? 30 : index === browsedHandCard ? 25 : index + 1, transform: [{ translateX: -browsedHandCard * 13 }, { translateY: -curveLift + browseLift + (selectedHandCard === index ? -18 : 0) }, { rotate: `${angle}deg` }] }]}>
-                    <Image source={cardImage} resizeMode="contain" style={styles.playerHandCard} />
-                  </Pressable>;
-                })}
-              </View>
+            <MovableItem editMode={layoutEditMode} label="Move and resize entire hand of cards" layoutId="hand-fan" style={styles.playerHandFan}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={!layoutEditMode} onScroll={event => setHandScrollX(event.nativeEvent.contentOffset.x)} scrollEventThrottle={16} contentContainerStyle={styles.playerHandScrollContent} style={styles.playerHandScroll}>
+                {handCards.map((cardImage, index) => <Pressable key={`hand-card-${index}`} accessibilityRole="button" accessibilityLabel={`Select card ${index + 1}`} onPress={() => setSelectedHandCard(index)} style={[styles.playerHandScrollCard, selectedHandCard === index && styles.playerHandScrollCardSelected]}>
+                  <Image source={cardImage} resizeMode="contain" style={styles.playerHandCard} />
+                </Pressable>)}
+              </ScrollView>
             </MovableItem>
             <MovableItem editMode={layoutEditMode} label="Move and resize random character portrait" layoutId="character-portrait" style={styles.topCharacterPosition}>
               <View style={styles.goldCharacterRing}>
@@ -483,9 +458,11 @@ const styles = StyleSheet.create({
   gameActionArtwork:{width:'100%',height:96,minWidth:44},
   discardTopCardMovable:{position:'absolute',left:'48%',top:'0%',width:'35.19%',height:'70.38%',zIndex:30},
   discardTopCardArtwork:{width:'100%',height:'100%'},
-  playerHandFan:{position:'absolute',left:'17%',bottom:'7%',width:'66%',height:'23%',zIndex:10},
-  playerHandFanInner:{width:'100%',height:'100%'},
-  playerHandCardTouch:{position:'absolute',bottom:0,width:'22%',height:'88%'},
+  playerHandFan:{position:'absolute',left:'17%',bottom:'7%',width:'66%',height:'23%',zIndex:10,overflow:'visible'},
+  playerHandScroll:{width:'100%',height:'100%'},
+  playerHandScrollContent:{alignItems:'flex-end',paddingHorizontal:5,gap:8},
+  playerHandScrollCard:{width:Math.max(72,Math.min(110, width*0.2)),height:'96%',alignSelf:'flex-end',marginBottom:0},
+  playerHandScrollCardSelected:{transform:[{translateY:-12}],borderWidth:2,borderColor:'#F4CE59',borderRadius:6},
   playerHandCard:{width:'100%',height:'100%',borderRadius:5},
   handZoomControls:{position:'absolute',right:0,bottom:0,flexDirection:'row',gap:5,zIndex:30},
   handZoomButton:{width:26,height:26,borderRadius:13,backgroundColor:'#10205D',borderWidth:2,borderColor:'#F4CF58',alignItems:'center',justifyContent:'center'},
