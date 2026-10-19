@@ -85,12 +85,10 @@ const howToPlayText =
   '• The first player to get rid of all their cards wins, unless Final Showdown rules decide the result.';
 
 function MovableItem({ children, editMode, style, label, layoutId }: { children: React.ReactNode; editMode: boolean; style?: any; label: string; layoutId: string }) {
-  const { width: deviceWidth, height: deviceHeight } = useWindowDimensions();
   const storageKey = 'risk-the-win-layout-v2-' + layoutId;
   const [savedLayout, setSavedLayout] = useState(() => LAYOUT_DEFAULTS[layoutId] || { offset: { x: 0, y: 0 }, scale: 1 });
   const [offset, setOffset] = useState(savedLayout.offset);
   const [scale, setScale] = useState(savedLayout.scale);
-  // Original layout behavior: use the approved saved offsets and scale without device-specific changes.
   const saveLayout = (nextOffset: {x:number;y:number}, nextScale: number) => {
     const next = { offset: nextOffset, scale: nextScale };
     setSavedLayout(next);
@@ -115,12 +113,7 @@ function MovableItem({ children, editMode, style, label, layoutId }: { children:
     onPanResponderMove: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scaleRef.current); },
     onPanResponderRelease: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scaleRef.current); },
   })).current;
-  // Keep the user's saved offsets available for layout editing, but do not apply
-  // editor offsets during normal play. Applying them here was pushing buttons off-screen.
-  const itemTransform = editMode
-    ? { transform: [{ translateX: offset.x }, { translateY: offset.y }, { scale }] }
-    : undefined;
-  return <View {...pan.panHandlers} accessibilityLabel={label} style={[style, itemTransform]}>
+  return <View {...pan.panHandlers} accessibilityLabel={label} style={[style, { transform: [{ translateX: offset.x }, { translateY: offset.y }, { scale }] }]}>
     {children}
     {editMode && <View style={styles.layoutItemControls}>
       <Pressable onPress={() => setScale(s => { const n = Number((s + 0.1).toFixed(2)); saveLayout(offset, n); return n; })} style={styles.layoutItemButton}><Text style={styles.layoutItemButtonText}>+</Text></Pressable>
@@ -174,12 +167,6 @@ export default function App() {
   const buttonWidth = Math.min(menuWidth * 0.84, 440);
   const buttonHeight = Math.max(54, Math.min(buttonWidth * 0.235, 94));
   const settingsSize = Math.max(20, Math.min(width * 0.17, 84)) / 3;
-  // Each screen has its own settings-button sizing and placement so it can be fitted independently.
-  const settingsButtonLayout = screen === 'welcome'
-    ? { multiplier: 2, right: compact ? 22 : 36, top: compact ? 16 : 24 }
-    : screen === 'lobby'
-      ? { multiplier: 1, right: compact ? 18 : 30, top: compact ? 18 : 26 }
-      : { multiplier: 1, right: compact ? 18 : 30, top: compact ? 18 : 26 };
   const settingsPanelWidth = Math.min(width * 0.705, height * 0.615, 465);
 
   function generateRoomCode() {
@@ -245,6 +232,9 @@ export default function App() {
                   <Image source={joinGameImage} style={styles.buttonArtwork} resizeMode="contain" />
                 </Pressable>
               </View>
+              <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => setSettingsOpen(true)} style={({pressed}) => [styles.settingsButton,{width:settingsSize,height:settingsSize,right:compact?22:36,top:compact?24:32,opacity:pressed?0.82:1}]}>
+                <Image source={settingsImage} style={styles.settingsArtwork} resizeMode="contain" />
+              </Pressable>
             </View>
           </View>
         ) : screen === 'lobby' ? (
