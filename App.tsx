@@ -381,7 +381,7 @@ export default function App() {
             <Text style={styles.gamePreviewNote}>SCREEN PREVIEW · MULTIPLAYER NOT CONNECTED</Text>
           </View>
         )}
-        <Pressable accessibilityRole="button" accessibilityLabel="Open Settings" onPress={() => { setHowToPlayOpen(false); setSettingsOpen(true); }} style={({pressed}) => [styles.settingsButton, { position: 'absolute', width: settingsSize * settingsButtonLayout.multiplier, height: settingsSize * settingsButtonLayout.multiplier, right: settingsButtonLayout.right, top: settingsButtonLayout.top, zIndex: 30, opacity: pressed ? 0.82 : 1 }]}><Image source={settingsImage} style={styles.settingsArtwork} resizeMode="contain" /></Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel="Open Settings" onPress={() => { setHowToPlayOpen(false); setSettingsOpen(true); }} style={({pressed}) => [styles.settingsButton, { position: 'absolute', width: settingsSize, height: settingsSize, right: 12, top: 12, zIndex: 30, opacity: pressed ? 0.82 : 1 }]}><Image source={settingsImage} style={styles.settingsArtwork} resizeMode="contain" /></Pressable>
         <Modal transparent visible={playerDropdownOpen && screen === 'main-game'} animationType="fade" statusBarTranslucent onRequestClose={() => setPlayerDropdownOpen(false)}>
           <Pressable accessibilityRole="button" accessibilityLabel="Close player menu" onPress={() => setPlayerDropdownOpen(false)} style={styles.playerDropdownModalBackdrop}>
             <View style={styles.playerDropdownModalMenu}>
