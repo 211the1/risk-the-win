@@ -115,8 +115,11 @@ function MovableItem({ children, editMode, style, label, layoutId }: { children:
     onPanResponderMove: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scaleRef.current); },
     onPanResponderRelease: (_, g) => { const n = { x: start.current.x + g.dx, y: start.current.y + g.dy }; offsetRef.current = n; setOffset(n); saveLayout(n, scaleRef.current); },
   })).current;
-  // Restore the user's saved layout positions and scales exactly as saved.
-  const itemTransform = { transform: [{ translateX: offset.x }, { translateY: offset.y }, { scale }] };
+  // Keep the user's saved offsets available for layout editing, but do not apply
+  // editor offsets during normal play. Applying them here was pushing buttons off-screen.
+  const itemTransform = editMode
+    ? { transform: [{ translateX: offset.x }, { translateY: offset.y }, { scale }] }
+    : undefined;
   return <View {...pan.panHandlers} accessibilityLabel={label} style={[style, itemTransform]}>
     {children}
     {editMode && <View style={styles.layoutItemControls}>
